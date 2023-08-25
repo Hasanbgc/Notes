@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/colorTransparent"
+    android:orientation="vertical"
+    android:padding="@dimen/_24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_dialog_ok_bg"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/textview_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/note_title"
+            android:textSize="@dimen/_24sp"
+            android:paddingStart="@dimen/_16dp"
+            android:paddingEnd="@dimen/_16dp"
+            android:paddingTop="@dimen/_16dp"
+            android:paddingBottom="@dimen/_12dp"
+            android:textColor="@color/colorAccent"
+            />
+        <TextView
+            android:id="@+id/textview_des"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/temp"
+            android:textSize="@dimen/_19sp"
+            android:paddingStart="@dimen/_16dp"
+            android:paddingEnd="@dimen/_16dp"
+            android:paddingBottom="@dimen/_24dp"
+            android:textColor="@color/black"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1dp"
+            android:background="@color/colorGrayDivider"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_48dp"
+            android:paddingStart="@dimen/_24dp"
+            android:paddingEnd="@dimen/_24dp"
+            android:background="@drawable/shape_button_bottom_corner"
+            >
+            <Button
+                android:id="@+id/button_yes"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/yes"
+                android:textSize="@dimen/_17sp"
+                android:backgroundTint="@color/colorWhite"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/colorTextGray"
+                />
+            <View
+                android:layout_width="@dimen/_2dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorGrayDivider"
+                android:layout_centerHorizontal="true"
+                />
+            <Button
+                android:id="@+id/button_no"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no"
+                android:textSize="@dimen/_17sp"
+                android:backgroundTint="@color/colorWhite"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/colorTextBlack"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

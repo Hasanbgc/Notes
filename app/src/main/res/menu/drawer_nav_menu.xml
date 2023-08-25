@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <item
+        android:id="@+id/fragment_setting"
+        android:title="Settings"
+        android:icon="@drawable/settings_24"
+        android:contentDescription="settings"
+        />
+    <item
+        android:id="@+id/fragment_profile"
+        android:title="Profile"
+        android:icon="@drawable/profile_24"
+        android:contentDescription="profile"
+        />
+    <item
+        android:id="@+id/fragment_help"
+        android:title="Help"
+        android:icon="@drawable/help_support_24"
+        android:contentDescription="Help"
+        />
+
+</menu>

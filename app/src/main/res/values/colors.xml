@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00BCD4</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGreenDark">#005f69</color>
+    <color name="colorLightGreen">#64b42d</color>
+    <color name="colorOrange">#f59b00</color>
+    <color name="colorRed">#e60055</color>
+    <color name="colorGrayBg">#ecebeb</color>
+    <color name="colorInactiveIcon">#9F9D9D</color>
+    <color name="colorInactiveText">#9F9D9D</color>
+    <color name="addNoteBGColor">#F5F5F5</color>
+    <color name="colorTransparent">@android:color/transparent</color>
+
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorAccent">#009ba5</color>
+
+    <color name="colorSnackBarWarning">#f59b00</color>
+    <color name="colorSnackBarError">#e60055</color>
+    <color name="colorSnackBarInfo">#e60055</color>
+
+    <color name="colorErrorBg">#e60055</color>
+    <color name="colorWarningBg">#f59b00</color>
+    <color name="colorInfoBg">#009ba5</color>
+
+    <color name="colorFabEnable">#f59b00</color>
+    <color name="colorFabDisable">#d9d8d7</color>
+
+    <color name="colorWhiteTrans40">#66FFFFFF</color>
+
+    <color name="colorBg">#009ba5</color>
+    <color name="colorEditTextAccent">#009ba5</color>
+    <color name="colorEditTextHint">#8a8784</color>
+    <color name="colorEditText">#333333</color>
+    <color name="colorGreen">#009ba5</color>
+    <color name="colorGrayFa">#FAFAFA</color>
+    <color name="colorGrayDivider">#D9D8D7</color>
+    <color name="colorGrayBorder">#b0aeac</color>
+    <color name="colorDisable">#ecebeb</color>
+
+    <color name="colorTextBlack">#3c3732</color>
+    <color name="colorTextBlackLight">#443f39</color>
+    <color name="colorTextBlack60">#993c3732</color>
+    <color name="colorTextBlack40">#663c3732</color>
+    <color name="colorTextGray">#8a8784</color>
+    <color name="colorTextGrayLight">#b0aeac</color>
+    <color name="colorTextWhite">#FFFFFF</color>
+    <color name="colorTextGreen">#009ba5</color>
+    <color name="colorTextGreenLight">#00a5ae</color>
+    <color name="colorTextRed">#e60055</color>
+    <color name="colorTextOrange">#f59b00</color>
+    <color name="colorTextLightGreen">#64b42d</color>
+
+    <color name="colorMenuIconActive">#009ba5</color>
+    <color name="colorMenuIconInactive">#993c3732</color>
+    <color name="colorMenuTextActive">#3c3732</color>
+    <color name="colorMenuTextInactive">#CC3c3732</color>
+
+    <color name="colorStressBg">#FFFFFF</color>
+    <color name="colorStressLowBg">#FFFFFF</color>
+    <color name="colorStressMidBg">#f59b00</color>
+    <color name="colorStressHighBg">#e60055</color>
+
+    <color name="colorChartGray">#d8d8d8</color>
+    <color name="colorChartOrange">#f59b00</color>
+    <color name="colorChartLightGreen">#64b42d</color>
+    <color name="colorChartGreen">#009ba5</color>
+    <color name="colorChartRed">#e60055</color>
+
+    <color name="colorLineLightGreen">#64b42d</color>
+    <color name="colorLineGreen">#009ba5</color>
+    <color name="colorLineOrange">#f59b00</color>
+    <color name="colorLineRed">#e60055</color>
+
+    <color name="colorToolsBgAsh">#f5f5f5</color>
+</resources>
+
+

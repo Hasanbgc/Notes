@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/save"
+        app:showAsAction="collapseActionView"
+        android:title="save"
+        android:enabled="false"
+        android:iconTint="@color/add_menu_item_color"
+        android:icon="@drawable/save_24"
+        />
+    <item android:id="@+id/delete"
+        app:showAsAction="collapseActionView"
+        android:title="Delete"
+        android:enabled="false"
+        android:iconTint="@color/add_menu_item_color"
+        android:icon="@drawable/delete_24"/>
+</menu>

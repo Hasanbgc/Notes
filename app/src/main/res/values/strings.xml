@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">TempNavigation</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home">Home</string>
+    <string name="favorite">Favourite</string>
+    <string name="archived">Archived</string>
+    <string name="note_title">Title</string>
+    <string name="description">Description</string>
+    <string name="description_of_note">Description of note</string>
+    <string name="dummy_name">hasanbinkurshed@gamil.com</string>
+
+    <string name="temp">Lorem ipsum dolor sit amet, consetetur sadipsing elitr, sed diam nonumy.</string>
+    <string name="temp2">Lorem ipsum dolor sit amet</string>
+    <string name="yes">yes</string>
+    <string name="no">No</string>
+</resources>
