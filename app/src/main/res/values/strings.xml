@@ -14,4 +14,7 @@
     <string name="temp2">Lorem ipsum dolor sit amet</string>
     <string name="yes">yes</string>
     <string name="no">No</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="rational_storage_permission_explanation">Without permission to access your photos, media and files, the app is unable to save the data. Are you sure you want to deny this permission?</string>
+    <string name="rational_camera_permission_explanation">Without permission to access your Camera, the app is unable to capture any picture. Are you sure you want to deny this permission?</string>
 </resources>
