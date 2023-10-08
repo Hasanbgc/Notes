@@ -16,7 +16,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
 
     }
-    val selectedNote= MutableLiveData<NoteModel>().apply { value = NoteModel(0,"","",0) }
+    val selectedNote= MutableLiveData<NoteModel>().apply { value = NoteModel(0,"","",0,"") }
 
 
 }

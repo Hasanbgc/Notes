@@ -20,13 +20,11 @@ class HomeFragmentViewModel(application: Application): AndroidViewModel(applicat
     val allNote = noteRepository.getAllNotes()
 
     fun insert(
-        title: String,
-        description: String,
-        priority: Int,
+        noteModel: NoteModel,
         onSuccess: () -> Unit,
         onFailed: (message: String) -> Unit
     ) {
-        noteRepository.insert(NoteEntity(0,title, description, priority), onSuccess = {
+        noteRepository.insert(noteModel.toNoteEntity(), onSuccess = {
             onSuccess()
         }, onFailed = {
             onFailed(it)
@@ -59,15 +57,12 @@ class HomeFragmentViewModel(application: Application): AndroidViewModel(applicat
     }
 
     fun delete(
-        id: Int,
-        title: String,
-        description: String,
-        priority: Int,
+       noteModel: NoteModel,
         onSuccess: () -> Unit,
         onFailed: (message: String) -> Unit
     ) {
         noteRepository.delete(
-            NoteEntity(id, title, description, priority),
+           noteModel.toNoteEntity(),
             onSuccess = {
                 onSuccess()
             }, onFailed = {
@@ -122,7 +117,7 @@ class HomeFragmentViewModel(application: Application): AndroidViewModel(applicat
         var modelList =  listOf<NoteModel>()
         list.value.let {noteEntityList->
             modelList = noteEntityList?.map { noteEntity->
-                NoteModel(noteEntity.id,noteEntity.title,noteEntity.description,noteEntity.priority)
+                NoteModel(noteEntity.id,noteEntity.title,noteEntity.description,noteEntity.priority,noteEntity.imageUri)
             }!!
         }
         return modelList.toLiveData()

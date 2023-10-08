@@ -88,7 +88,7 @@ class HomeFragment : Fragment(),View.OnClickListener {
         homeFragmentViewModel.allNote.observe(viewLifecycleOwner, Observer { it->
             val list = mutableListOf<NoteModel>()
             for (i in it.indices ){
-                val note = NoteModel(it[i].id,it[i].title,it[i].description,it[i].priority)
+                val note = NoteModel(it[i].id,it[i].title,it[i].description,it[i].priority,it[i].imgUri)
                 list.add(note)
             }
             adapter.setNote(list)
@@ -122,11 +122,11 @@ class HomeFragment : Fragment(),View.OnClickListener {
     }
     fun dummyData(){
         val list: MutableList<NoteModel> = mutableListOf()
-        list.add( NoteModel(1,"hasan","name",1))
-        list.add( NoteModel(2,"Jishan","name",2))
-        list.add( NoteModel(3,"Noman","name",3))
-        list.add( NoteModel(4,"Puspa","name",4))
-        list.add( NoteModel(5,"Farhan","name",5))
+        list.add( NoteModel(1,"hasan","name",1,""))
+        list.add( NoteModel(2,"Jishan","name",2,""))
+        list.add( NoteModel(3,"Noman","name",3,""))
+        list.add( NoteModel(4,"Puspa","name",4,""))
+        list.add( NoteModel(5,"Farhan","name",5,""))
 
         //adapter.setNote(list)
 

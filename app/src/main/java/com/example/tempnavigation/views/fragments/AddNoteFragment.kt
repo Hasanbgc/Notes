@@ -36,6 +36,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.tempnavigation.R
+import com.example.tempnavigation.models.NoteModel
 import com.example.tempnavigation.utilities.DateUtil
 import com.example.tempnavigation.utilities.DialogUtils
 import com.example.tempnavigation.utilities.Dialogs
@@ -46,6 +47,7 @@ import com.example.tempnavigation.viewmodels.MainViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import java.io.IOException
+import kotlin.time.measureTimedValue
 
 
 class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(){
@@ -69,9 +71,13 @@ class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(
     private val storagePermission33 = arrayOf(Manifest.permission.READ_MEDIA_IMAGES,Manifest.permission.READ_MEDIA_AUDIO,Manifest.permission.READ_MEDIA_VIDEO)
     private val  cameraPermission = arrayOf(Manifest.permission.CAMERA)
     private lateinit var uriForCamera: Uri
-    private lateinit var imageTitle:String
-    private lateinit var savedImageFile:String
+    private var imageTitle = ""
+    private  var imageUri:String = ""
+    private lateinit var bitmap:Bitmap
     private var permissionRequestedByCamera = false
+    private var saved = false
+    private var previousTitle=""
+    private var currentTitle=""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -102,12 +108,11 @@ class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.save-> saveNote()
+            R.id.save-> performNoteSave()
             R.id.delete-> clear()
             android.R.id.home-> {
                 hideSoftKeyboard()
-                if (editTextTitle.text.isNotEmpty() && editTextDescription.text?.isNotEmpty() == true){
-                saveNote()}
+                performNoteSave()
                 mainViewModel.navigationPage.value = NavigationPage.HOME
                 return true
             }
@@ -136,17 +141,37 @@ class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(
             editTextDescription.text?.clear()
         }
     }
-    private fun saveNote(){
-        val title = editTextTitle.text.trim().toString()
+    private fun performNoteSave(){
+        previousTitle = currentTitle
+        currentTitle = editTextTitle.text.trim().toString()
         val description = editTextDescription.text?.trim().toString()
-        if(title.isNotEmpty() && description.isNotEmpty()){
+        val imgUri = imageUri.ifEmpty { "" }
+        if(currentTitle.isNotEmpty() && description.isNotEmpty()){
             menuItem.findItem(R.id.save).isEnabled = true
         }
-        addNoteFragmentViewModel.insert(title,description,1, onSuccess = {
-            Handler(Looper.getMainLooper()).post {
-                Toast.makeText(requireContext(),"note Saved",Toast.LENGTH_SHORT).show()
-            }
+        val note = NoteModel(0,currentTitle,description,1,imgUri)
+        if(saved){
+            updateNote(note)
+        }else{
+            insertNote(note)
+        }
+    }
+    fun updateNote(currentNote:NoteModel){
+       addNoteFragmentViewModel.getNoteByTitle(previousTitle,{savedNote ->
+           savedNote.title = currentNote.title
+           savedNote.description = currentNote.description
+           savedNote.priority = currentNote.priority
+           savedNote.imageUri = currentNote.imageUri
+           addNoteFragmentViewModel.update(savedNote,{},{})
+       },{})
 
+    }
+    fun insertNote(note:NoteModel) {
+        addNoteFragmentViewModel.insert(note, onSuccess = {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(requireContext(), "note Saved", Toast.LENGTH_SHORT).show()
+            }
+            saved = true
         }, onFailed = {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
@@ -201,6 +226,7 @@ class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(
         // photo picker.
         if (uri != null) {
             imageView.setImageURI(uri)
+            imageUri = uri.toString() //TODO() URI is not saving correctly
             imageHolder.visibility = View.VISIBLE
         } else {
             Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
@@ -212,15 +238,17 @@ class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(
     private val captureImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             try {
-                val bitmap = getCapturedImage(uriForCamera)
-                savedImageFile =  FileUtil.saveImage(requireContext(),imageTitle,bitmap)
-                Toast.makeText(context,savedImageFile,Toast.LENGTH_LONG).show()
-                Log.d(TAG,savedImageFile)
+                bitmap = getCapturedImage(uriForCamera)
+                imageHolder.visibility = View.VISIBLE
+                imageView.setImageBitmap(bitmap)
+                imageUri =  FileUtil.saveImage(requireContext(),imageTitle,bitmap)
+                Toast.makeText(context,imageUri,Toast.LENGTH_LONG).show()
+                Log.d(TAG,imageUri)
             }catch (e:IOException){
                 e.printStackTrace()
             }
-            imageHolder.visibility = View.VISIBLE
-            val bitmap = FileUtil.getImageFromInternalStorage(savedImageFile)
+
+            //val bitmap = FileUtil.getImageFromInternalStorage(imageUri)
             imageView.setImageBitmap(bitmap)
         }else{
             Toast.makeText(requireContext(),"no image captured",Toast.LENGTH_SHORT).show()
@@ -232,8 +260,6 @@ class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(
         contentValues.put(MediaStore.Images.Media.TITLE,imageTitle)
         contentValues.put(MediaStore.Images.Media.DESCRIPTION,"captured by hasan")
         uriForCamera = requireContext().contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues)!!
-
-
 
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,uriForCamera)
@@ -325,11 +351,11 @@ class AddNoteFragment : Fragment(),View.OnClickListener, Dialogs by DialogUtils(
 
     }
 
-    private fun getCapturedImage(selectedPhotoUri: Uri): Bitmap {
+    private fun getCapturedImage(capturedImageUri: Uri): Bitmap {
         return when {
-            Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedPhotoUri)
+            Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(requireContext().contentResolver, capturedImageUri)
             else -> {
-                val source = ImageDecoder.createSource(requireContext().contentResolver, selectedPhotoUri)
+                val source = ImageDecoder.createSource(requireContext().contentResolver, capturedImageUri)
                 ImageDecoder.decodeBitmap(source)
             }
         }

@@ -4,10 +4,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tempnavigation.R
 import com.example.tempnavigation.models.NoteModel
+import com.example.tempnavigation.utilities.FileUtil
 
 
 class NoteViewAdapter(private val onItemClick: (NoteModel) -> Unit) : RecyclerView.Adapter<NoteViewAdapter.NoteHolder>() {
@@ -15,24 +17,56 @@ class NoteViewAdapter(private val onItemClick: (NoteModel) -> Unit) : RecyclerVi
 
     class NoteHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val textViewTitle: TextView = itemView.findViewById(R.id.textViewItemTitle)
-        private val textViewDescription: TextView = itemView.findViewById(R.id.textViewItemDescription)
-        private val textViewPriority: TextView = itemView.findViewById(R.id.textViewPriority)
+        private fun withImage(noteModel: NoteModel){
+            val textViewTitle: TextView = itemView.findViewById(R.id.mtextViewItemTitle)
+            val textViewDescription: TextView = itemView.findViewById(R.id.mtextViewItemDescription)
+            val textViewPriority: TextView = itemView.findViewById(R.id.mtextViewPriority)
+            val imageView:ImageView = itemView.findViewById(R.id.image_view)
 
-        fun bind(noteModel: NoteModel){
             textViewTitle.text = noteModel.title
             textViewDescription.text = noteModel.description
             textViewPriority.text = noteModel.priority.toString()
+            if (noteModel.imageUri.isNotEmpty()) {
+                val bitmap = FileUtil.getImageFromInternalStorage(noteModel.imageUri)
+                imageView.visibility = View.VISIBLE
+                imageView.setImageBitmap(bitmap)
+            }
+
+        }
+        private fun withOutImage(noteModel: NoteModel){
+            val textViewTitle: TextView = itemView.findViewById(R.id.textViewItemTitle)
+            val textViewDescription: TextView = itemView.findViewById(R.id.textViewItemDescription)
+            val textViewPriority: TextView = itemView.findViewById(R.id.textViewPriority)
+
+            textViewTitle.text = noteModel.title
+            textViewDescription.text = noteModel.description
+            textViewPriority.text = noteModel.priority.toString()
+
+        }
+
+
+
+
+        fun bind(noteModel: NoteModel){
+            when(noteModel.imageUri.isNotEmpty()){
+                true -> withImage(noteModel)
+                else -> withOutImage(noteModel)
+            }
         }
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {
-        val itemView: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.note_item, parent, false)
+        val itemView:View =  when(viewType){
+            WITHIMAGE ->{ LayoutInflater.from(parent.context).inflate(R.layout.note_item_with_image, parent, false) }
+            else -> {LayoutInflater.from(parent.context).inflate(R.layout.note_item, parent, false)}
+        }
         return NoteHolder(itemView)
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return if(mNoteList[position].imageUri.isNotEmpty()) WITHIMAGE else WITHOUTIMAGE
+    }
     override fun getItemCount(): Int {
 
         return mNoteList.size
@@ -50,7 +84,12 @@ class NoteViewAdapter(private val onItemClick: (NoteModel) -> Unit) : RecyclerVi
         holder.bind(currentNote)
 
         holder.itemView.setOnClickListener{
-            onItemClick(NoteModel(currentNote.id,currentNote.title,currentNote.description,currentNote.priority))
+            onItemClick(NoteModel(currentNote.id,currentNote.title,currentNote.description,currentNote.priority,currentNote.imageUri))
         }
+    }
+
+    companion object{
+        const val WITHIMAGE = 1
+        const val WITHOUTIMAGE = 2
     }
 }

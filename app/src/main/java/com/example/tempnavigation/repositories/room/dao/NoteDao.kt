@@ -25,6 +25,8 @@ interface NoteDao {
 
     @Query("SELECT * FROM ${Constant.TABLE_NOTE} WHERE id=:id LIMIT  1")
     fun getNote(id:Int):NoteEntity
+    @Query("SELECT * FROM ${Constant.TABLE_NOTE} WHERE id=:title LIMIT  1")
+    fun getNoteByTitle(title:String):NoteEntity
 
     @Query("SELECT * FROM ${Constant.TABLE_NOTE} ORDER BY priority DESC")
     fun getAllNotes(): LiveData<List<NoteEntity>>

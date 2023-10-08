@@ -47,6 +47,13 @@ class NoteRepository(private val noteDao: NoteDao) {
 
         })
     }
+    fun getNoteByTitle(title: String,onSuccess: (noteEntity:NoteEntity) -> Unit,onFailed: (message: String) -> Unit){
+        getNotebyTitle(title,onSuccess={noteEntity->
+            onSuccess(noteEntity)
+        }, onFailed = {
+
+        })
+    }
     fun deleteAllNotes(onSuccess: () -> Unit,onFailed: (message: String) -> Unit){
         deleteAllNoteAsyncTask(onSuccess = {
             onSuccess()
@@ -133,9 +140,21 @@ class NoteRepository(private val noteDao: NoteDao) {
         }
     }
     private fun getNote(id:Int,onSuccess: (note: NoteEntity) -> Unit,onFailed: (message: String) -> Unit){
-        var noteEntity  =NoteEntity(0,"","",0)
+        var noteEntity  =NoteEntity(0,"","",0,"")
         CoroutineScope(IO).launch {
            noteEntity = noteDao.getNote(id)
+        }.invokeOnCompletion { throwable->
+            if(throwable==null){
+                onSuccess(noteEntity)
+            }else{
+                onFailed(throwable.message.toString())
+            }
+        }
+    }
+    private fun getNotebyTitle(title:String,onSuccess: (note: NoteEntity) -> Unit,onFailed: (message: String) -> Unit){
+        var noteEntity  =NoteEntity(0,"","",0,"")
+        CoroutineScope(IO).launch {
+            noteEntity = noteDao.getNoteByTitle(title)
         }.invokeOnCompletion { throwable->
             if(throwable==null){
                 onSuccess(noteEntity)

@@ -2,6 +2,7 @@ package com.example.tempnavigation.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.example.tempnavigation.models.NoteModel
 import com.example.tempnavigation.repositories.NoteRepository
 import com.example.tempnavigation.repositories.room.NoteRoomDatabase
 import com.example.tempnavigation.repositories.room.entity.NoteEntity
@@ -16,13 +17,12 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
     val allNote = noteRepository.getAllNotes()
 
     fun insert(
-        title: String,
-        description: String,
-        priority: Int,
+        noteModel:NoteModel,
         onSuccess: () -> Unit,
         onFailed: (message: String) -> Unit
     ) {
-        noteRepository.insert(NoteEntity(0,title, description, priority), onSuccess = {
+        val noteEntity =noteModel.toNoteEntity()//NoteEntity(note.id,note.title,note.description,note.priority,note.imageUri)
+        noteRepository.insert(noteEntity, onSuccess = {
             onSuccess()
         }, onFailed = {
             onFailed(it)
@@ -30,18 +30,16 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun update(
-        id: Int,
-        title: String,
-        description: String,
-        priority: Int,
+        noteModel: NoteModel,
         onSuccessUpdate: () -> Unit,
         onFailedUpdate: (message: String) -> Unit
     ) {
-        noteRepository.getNoteById(id,
+        noteRepository.getNoteById(noteModel.id,
             onSuccess = { noteEntity ->
-                noteEntity.title = title
-                noteEntity.priority = priority
-                noteEntity.description = description
+                noteEntity.title = noteModel.title
+                noteEntity.priority = noteModel.priority
+                noteEntity.description = noteModel.description
+                noteEntity.imgUri = noteModel.imageUri
                 noteRepository.update(noteEntity,
                     onSuccess = {
                         onSuccessUpdate()
@@ -55,15 +53,12 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun delete(
-        id: Int,
-        title: String,
-        description: String,
-        priority: Int,
+        noteModel: NoteModel,
         onSuccess: () -> Unit,
         onFailed: (message: String) -> Unit
     ) {
-        noteRepository.delete(
-            NoteEntity(id, title, description, priority),
+        val noteEntity = noteModel.toNoteEntity()
+        noteRepository.delete(noteEntity,
             onSuccess = {
                 onSuccess()
             }, onFailed = {
@@ -101,6 +96,17 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
         noteRepository.getNoteById(id,
             onSuccess = { note ->
                 onSuccess(note)
+            },
+            onFailed = { onFailed(it) })
+    }
+    fun getNoteByTitle(
+        title:String,
+        onSuccess: (note: NoteModel) -> Unit,
+        onFailed: (message: String) -> Unit
+    ) {
+        noteRepository.getNoteByTitle(title,
+            onSuccess = { note ->
+                onSuccess(note.toNoteModel())
             },
             onFailed = { onFailed(it) })
     }
