@@ -1,22 +1,24 @@
 package com.example.tempnavigation.adapters
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tempnavigation.R
 import com.example.tempnavigation.models.NoteModel
 import com.example.tempnavigation.utilities.FileUtil
 
 
-class NoteViewAdapter(private val onItemClick: (NoteModel) -> Unit) : RecyclerView.Adapter<NoteViewAdapter.NoteHolder>() {
+class NoteViewAdapter(private val context: Context,private val onItemClick: (NoteModel) -> Unit) : RecyclerView.Adapter<NoteViewAdapter.NoteHolder>() {
     private var mNoteList: List<NoteModel> = listOf()
 
-    class NoteHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
+    class NoteHolder(val context: Context,itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val TAG = "NoteViewAdapter"
         private fun withImage(noteModel: NoteModel){
             val textViewTitle: TextView = itemView.findViewById(R.id.mtextViewItemTitle)
             val textViewDescription: TextView = itemView.findViewById(R.id.mtextViewItemDescription)
@@ -27,9 +29,10 @@ class NoteViewAdapter(private val onItemClick: (NoteModel) -> Unit) : RecyclerVi
             textViewDescription.text = noteModel.description
             textViewPriority.text = noteModel.priority.toString()
             if (noteModel.imageUri.isNotEmpty()) {
-                val bitmap = FileUtil.getImageFromInternalStorage(noteModel.imageUri)
+                //val bitmap = FileUtil.getImageFromInternalStorage(context,noteModel.imageUri)
+                Log.d(TAG,"NoteViewAdapter = ${noteModel.imageUri}")
                 imageView.visibility = View.VISIBLE
-                imageView.setImageBitmap(bitmap)
+                imageView.setImageURI(noteModel.imageUri.toUri())
             }
 
         }
@@ -61,7 +64,7 @@ class NoteViewAdapter(private val onItemClick: (NoteModel) -> Unit) : RecyclerVi
             WITHIMAGE ->{ LayoutInflater.from(parent.context).inflate(R.layout.note_item_with_image, parent, false) }
             else -> {LayoutInflater.from(parent.context).inflate(R.layout.note_item, parent, false)}
         }
-        return NoteHolder(itemView)
+        return NoteHolder(context,itemView)
     }
 
     override fun getItemViewType(position: Int): Int {

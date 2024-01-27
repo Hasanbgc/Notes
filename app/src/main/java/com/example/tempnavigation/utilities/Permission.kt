@@ -1,22 +1,27 @@
 package com.example.tempnavigation.utilities
 
 import android.app.Activity
+import androidx.fragment.app.FragmentActivity
 
 interface Permission {
 
-    fun checkMediaPermission(
+    fun hasMediaAccessPermission(
         context: Activity,
-        onSuccess: () -> Unit,
-        onFailed: () -> Unit
+        onPermissionGranted: () -> Unit,
+        requestPermission: () -> Unit
     )
 
-    fun checkCameraAccessPermission(
+    fun hasCameraAccessPermission(
         context: Activity,
-        onSuccess: () -> Unit,
-        onFailed: () -> Unit
+        onPermissionGranted: () -> Unit,
+        requestPermission: () -> Unit
     )
     ///TODO
-    /*
-    fun checkInternetPermission()
-    fun checkLocationPermission()*/
+
+    /*fun checkInternetPermission()*/
+    fun hasLocationPermission(
+        fragmentActivity: Activity,
+        onPermissionGranted: () -> Unit,
+        requestPermission: () -> Unit
+    )
 }

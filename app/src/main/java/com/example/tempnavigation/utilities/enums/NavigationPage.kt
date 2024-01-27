@@ -10,5 +10,6 @@ enum class NavigationPage {
     ABOUT_US,
     HELP_SUPPORT,
     ADD_NOTE,
-    EDIT_NOTE
+    EDIT_NOTE,
+    MAP
 }

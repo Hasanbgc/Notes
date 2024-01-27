@@ -27,12 +27,16 @@
     <fragment
         android:id="@+id/fragment_add_note"
         android:name="com.example.tempnavigation.views.fragments.AddNoteFragment"
-        tools:layout="@layout/fragment_add_note"
-        />
+        tools:layout="@layout/fragment_add_note"/>
     <fragment
         android:id="@+id/fragment_edit_note"
         android:name="com.example.tempnavigation.views.fragments.EditNoteFragment"
-        tools:layout="@layout/fragment_edit_note"
+        tools:layout="@layout/fragment_edit_note"/>
+
+    <fragment
+        android:id="@+id/fragment_maps"
+        android:name="com.example.tempnavigation.views.fragments.MapsFragment"
+        tools:layout="@layout/fragment_maps"
         />
 
 
