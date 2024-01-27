@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
                         "Do You Want To Close The App?",
                         "YES",
                         "NO",
-                        { super.onBackPressed() }, {})
+                        { finish() }, {})
                 }
                 else{
                     Toast.makeText(this,"backpressed clicked",Toast.LENGTH_SHORT).show()
@@ -151,6 +151,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
                 NavigationPage.ARCHIVE -> navController.navigate(R.id.navigation_archive)
                 NavigationPage.ADD_NOTE -> navController.navigate(R.id.fragment_add_note)
                 NavigationPage.EDIT_NOTE -> navController.navigate(R.id.fragment_edit_note)
+                NavigationPage.MAP -> navController.navigate(R.id.fragment_maps)
+
+//                {
+//                    when(navController.currentDestination?.id){
+//                        R.id.fragment_add_note -> navController.navigate(R.id.action_addNote_to_maps)
+//                        R.id.fragment_edit_note -> navController.navigate(R.id.action_editNote_to_maps)
+//                        else->{}
+//                    }
+//                }
                 //NavigationPage.ABOUT_US -> navController.navigate(R.id.na)
                 //NavigationPage.HELP_SUPPORT -> navController.navigate(R.id.nav)
                 else -> {}

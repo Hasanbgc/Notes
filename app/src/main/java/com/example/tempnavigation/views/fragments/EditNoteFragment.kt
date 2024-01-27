@@ -1,13 +1,9 @@
 package com.example.tempnavigation.views.fragments
 
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -27,6 +23,7 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
+import androidx.core.net.toUri
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -43,7 +40,7 @@ import java.io.IOException
 
 class EditNoteFragment : Fragment(),View.OnClickListener {
     private val TAG = "EditNoteFragment"
-
+    //region veriable
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: EditNoteFragmentViewModel by viewModels()
     private lateinit var rootView: View
@@ -56,15 +53,13 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
     private lateinit var cameraFab: FloatingActionButton
     private lateinit var menuItem: Menu
     private lateinit var inputMethodManager: InputMethodManager
-    private lateinit var note: NoteModel
     private lateinit var title: String
     private lateinit var description: String
-    private lateinit var tempImage: Bitmap
     private lateinit var bitmap: Bitmap
     private lateinit var imageUri:String
-    private lateinit var uriForCamera: Uri
     private var imageTitle = ""
     private var id: Int = 0
+    //endregion
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -125,9 +120,8 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
             editTextTitle.setText(title)
             editTextDescription.setText(description)
             if(imageUri!="") {
-                tempImage = FileUtil.getImageFromInternalStorage(imageUri)!!
                 imageHolder.visibility = View.VISIBLE
-                imageView.setImageBitmap(tempImage)
+                imageView.setImageURI(imageUri.toUri())
             }
         })
     }
@@ -151,6 +145,7 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
     }
 
     private fun delete() {
+        hideSoftKeyboard()
         viewModel.delete(NoteModel(id,title,description,1,imageUri), {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(context, "note deleted", Toast.LENGTH_SHORT).show()
@@ -190,7 +185,6 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
         }
         return false
     }
-
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         // Callback is invoked after the user selects a media item or closes the
         // photo picker.
@@ -198,8 +192,6 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
             imageView.setImageURI(uri)
             imageUri = uri.toString()
             imageHolder.visibility = View.VISIBLE
-        } else {
-            Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
         }
     }
     private fun openResultFragment() {
@@ -208,42 +200,34 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
     private val captureImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             try {
-                bitmap = getCapturedImage(uriForCamera)
+                bitmap = (result.data?.extras?.get("data") as? Bitmap)!!
                 imageHolder.visibility = View.VISIBLE
                 imageView.setImageBitmap(bitmap)
-                imageUri =  FileUtil.saveImage(requireContext(),imageTitle,bitmap)
-                Toast.makeText(context,imageUri,Toast.LENGTH_LONG).show()
+                imageTitle = DateUtil.getCurrentTime().toString()
+                imageUri = FileUtil.saveBitmapToAppFolderAndGetPath(requireContext(),bitmap,imageTitle).toString()
                 Log.d(TAG,imageUri)
-            }catch (e: IOException){
+                Toast.makeText(context,imageUri,Toast.LENGTH_LONG).show()
+
+            }catch (e:IOException){
                 e.printStackTrace()
             }
-
-            //val bitmap = FileUtil.getImageFromInternalStorage(imageUri)
-            imageView.setImageBitmap(bitmap)
         }else{
             Toast.makeText(requireContext(),"no image captured",Toast.LENGTH_SHORT).show()
         }
     }
     private fun openCamera(){
-        val contentValues = ContentValues()
-        imageTitle = DateUtil.getCurrentTime().toString()+".png"
-        contentValues.put(MediaStore.Images.Media.TITLE,imageTitle)
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION,"captured by hasan")
-        uriForCamera = requireContext().contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues)!!
-
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,uriForCamera)
         captureImage.launch(cameraIntent)
     }
-    private fun getCapturedImage(capturedImageUri: Uri): Bitmap {
-        return when {
-            Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(requireContext().contentResolver, capturedImageUri)
-            else -> {
-                val source = ImageDecoder.createSource(requireContext().contentResolver, capturedImageUri)
-                ImageDecoder.decodeBitmap(source)
-            }
-        }
-    }
+//    private fun getCapturedImage(capturedImageUri: Uri): Bitmap {
+//        return when {
+//            Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(requireContext().contentResolver, capturedImageUri)
+//            else -> {
+//                val source = ImageDecoder.createSource(requireContext().contentResolver, capturedImageUri)
+//                ImageDecoder.decodeBitmap(source)
+//            }
+//        }
+//    }
 
     override fun onClick(v: View?) {
         when(v?.id){
@@ -251,6 +235,7 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
             R.id.fab_camera_edit -> openCamera()
             R.id.button_discard_edit->{
                 imageView.setImageResource(0)
+                imageUri = ""
                 imageHolder.visibility = View.GONE
             }
         }

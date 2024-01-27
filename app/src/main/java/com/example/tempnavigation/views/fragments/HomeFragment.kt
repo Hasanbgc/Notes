@@ -62,7 +62,7 @@ class HomeFragment : Fragment(),View.OnClickListener {
     private fun setInitValue(){
         mainViewModel.showBottomNav.value = true
         mainViewModel.title.value = "Home"
-        adapter = NoteViewAdapter(){note->
+        adapter = NoteViewAdapter(requireContext()){note->
             mainViewModel.selectedNote.value = note
             mainViewModel.navigationPage.value = NavigationPage.EDIT_NOTE
         }

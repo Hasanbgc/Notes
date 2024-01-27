@@ -17,4 +17,7 @@
     <string name="permission_denied">Permission Denied</string>
     <string name="rational_storage_permission_explanation">Without permission to access your photos, media and files, the app is unable to save the data. Are you sure you want to deny this permission?</string>
     <string name="rational_camera_permission_explanation">Without permission to access your Camera, the app is unable to capture any picture. Are you sure you want to deny this permission?</string>
+    <string name="rational_location_permission_explanation">Without your Location Permission, the app is unable to access your location. Are you sure you want to deny this permission?</string>
+    <string name="education_massage_for_bg_location">To provide location reminders, this app requires background location access. By granting this permission, you allow the app to send you reminders based on your current location even when you\'re not using it actively.</string>
+    <string name="bg_location_title"> Background Location Access</string>
 </resources>

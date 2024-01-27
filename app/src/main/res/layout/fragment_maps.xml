@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.fragments.MapsFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/map_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="@dimen/_24dp"
+        >
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/set_location_button"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_56dp"
+            android:textSize="@dimen/_24sp"
+            android:text="Set"
+            android:backgroundTint="@color/colorGreenDark"
+            android:textColor="@color/colorFabEnable"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</fragment>

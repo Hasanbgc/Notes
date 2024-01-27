@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/bottom_sheet_behavior"
+    >
+    <LinearLayout
+        android:id="@+id/layout_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="4"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/_8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+        <LinearLayout
+            android:layout_weight="1"
+            android:id="@+id/location"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_112dp"
+            >
+            <ImageView
+                android:layout_width="@dimen/_56dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/add_location_24"
+                />
+            <TextView
+                android:paddingStart="@dimen/_16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_32dp"
+                android:text="Location"
+                android:textSize="@dimen/_28sp"
+                android:layout_gravity="center_vertical"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:id="@+id/image"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_112dp"
+            >
+            <ImageView
+                android:layout_width="@dimen/_56dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/image_24"
+                />
+            <TextView
+                android:paddingStart="@dimen/_16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_32dp"
+                android:text="Image"
+                android:textSize="@dimen/_28sp"
+                android:layout_gravity="center_vertical"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:id="@+id/camera"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_112dp"
+            >
+            <ImageView
+                android:layout_width="@dimen/_56dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/photo_camera_24"
+                />
+            <TextView
+                android:paddingStart="@dimen/_16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_32dp"
+                android:text="Camera"
+                android:textSize="@dimen/_28sp"
+                android:layout_gravity="center_vertical"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:id="@+id/reminder"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_112dp"
+            >
+            <ImageView
+                android:layout_width="@dimen/_56dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/notification_add_24"
+                />
+            <TextView
+                android:paddingStart="@dimen/_16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_32dp"
+                android:text="Reminder"
+                android:textSize="@dimen/_28sp"
+                android:layout_gravity="center_vertical"
+                />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

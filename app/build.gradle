@@ -1,7 +1,10 @@
+
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -18,11 +21,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -49,12 +54,16 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
+    testImplementation "com.google.truth:truth:1.1.4"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     implementation("androidx.fragment:fragment-ktx:1.6.1")
     implementation("androidx.activity:activity-ktx:1.6.1")
+
+    //workManager
+    implementation "androidx.work:work-runtime-ktx:2.7.0"
 
     //Androidx lifecycle
     def lifecycle_version = "2.2.0"
@@ -85,4 +94,12 @@ dependencies {
     //cardView
     implementation "androidx.cardview:cardview:1.0.0"
 
+    //map
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    //location
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    //Kotlin Coroutine
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    //picasso for image loading from url
+    implementation 'com.squareup.picasso:picasso:2.8'
 }
