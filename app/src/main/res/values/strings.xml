@@ -20,4 +20,12 @@
     <string name="rational_location_permission_explanation">Without your Location Permission, the app is unable to access your location. Are you sure you want to deny this permission?</string>
     <string name="education_massage_for_bg_location">To provide location reminders, this app requires background location access. By granting this permission, you allow the app to send you reminders based on your current location even when you\'re not using it actively.</string>
     <string name="bg_location_title"> Background Location Access</string>
+    <string name="select_all">Select All</string>
+    <string name="unselect_all">Unselect All</string>
+    <string name="delete_all">Delete All</string>
+    <string name="delete_selected">Delete Selected</string>
+    <string name="staggered">staggered</string>
+    <string name="delete_undo_msg">note has been deleted. Would you like to undo the delete?</string>
+    <string name="delete_confirm_msg">note has been deleted successfully!</string>
+
 </resources>

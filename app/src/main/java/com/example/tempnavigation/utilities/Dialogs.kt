@@ -1,7 +1,10 @@
 package com.example.tempnavigation.utilities
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import com.example.tempnavigation.services.MyService
 
 interface Dialogs {
     fun doubleButtonDialog(
@@ -22,4 +25,6 @@ interface Dialogs {
         noButton: String,
         onYesClick: () -> Unit
     )
+
+
 }

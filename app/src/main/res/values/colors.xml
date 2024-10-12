@@ -75,6 +75,23 @@
     <color name="colorLineRed">#e60055</color>
 
     <color name="colorToolsBgAsh">#f5f5f5</color>
+    <color name="soft_purple">#A28BE5</color>
+
+    <!-- Light Gray (Input Fields Background) -->
+    <color name="light_gray">#F1F1F1</color>
+
+    <!-- Soft Green (Button Background) -->
+    <color name="soft_green">#6FCF97</color>
+
+    <!-- Light Gray (Placeholder Text) -->
+    <color name="placeholder_text">#BDBDBD</color>
+
+    <!-- Dark Purple (Header Text and Main Text) -->
+    <color name="dark_purple">#4C4C80</color>
+
+    <!-- Light Purple (Border Color for Inputs) -->
+    <color name="light_purple">#D1C4E9</color>
+
 </resources>
 
 

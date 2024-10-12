@@ -5,77 +5,106 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".views.fragments.EditNoteFragment">
+    tools:context=".views.fragments.AddNoteFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:fillViewport="true"
-        >
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
             <androidx.cardview.widget.CardView
-                android:id="@+id/image_holder_edit"
+                android:id="@+id/image_holder"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:cardCornerRadius="@dimen/_12dp"
                 android:visibility="gone"
-                >
+                app:cardCornerRadius="@dimen/_12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
                 <ImageView
-                    android:id="@+id/button_discard_edit"
-                    android:layout_width="@dimen/_48dp"
-                    android:layout_height="@dimen/_48dp"
+                    android:id="@+id/button_discard"
+                    android:layout_width="@dimen/_28dp"
+                    android:layout_height="@dimen/_28dp"
                     android:layout_gravity="top|right"
-                    android:src="@drawable/close_24"
                     android:background="@drawable/shape_top_right_round_corner_discard_button"
                     android:elevation="@dimen/_4dp"
-                    />
+                    android:src="@drawable/close_24" />
+
                 <ImageView
-                    android:id="@+id/image_view_edit"
+                    android:id="@+id/image_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@mipmap/ic_launcher"
                     android:scaleType="centerCrop"
-                    />
+                    android:src="@mipmap/ic_launcher" />
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/map_holder"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_below="@id/image_holder"
+                android:visibility="gone"
+                app:cardCornerRadius="@dimen/_12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/button_discard_map"
+                    android:layout_width="@dimen/_28dp"
+                    android:layout_height="@dimen/_28dp"
+                    android:layout_gravity="top|right"
+                    android:background="@drawable/shape_top_right_round_corner_discard_button"
+                    android:elevation="@dimen/_4dp"
+                    android:src="@drawable/close_24" />
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/map_view_addNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_120dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"/>
+
+            </androidx.cardview.widget.CardView>
+
             <EditText
-                android:id="@+id/editText_title_edit"
+                android:id="@+id/editText_title"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Title"
-                android:inputType="text"
-                android:textColor="@color/white"
-                android:textColorHint="@color/colorTextGray"
-                android:focusedByDefault="true"
-                android:background="@drawable/shape_edit_text_green"
-                android:padding="8dp"
-                android:focusable="true"
-                android:autofillHints="name"
-                android:layout_marginTop="@dimen/_2dp"
-                android:layout_below="@id/image_holder_edit"
+                android:layout_below="@id/map_holder"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                />
+                android:layout_marginTop="@dimen/_2dp"
+                android:autofillHints="name"
+                android:background="@drawable/shape_edit_text_green"
+                android:focusable="true"
+                android:focusedByDefault="true"
+                android:hint="Title"
+                android:inputType="text"
+                android:padding="8dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/colorTextGray" />
 
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editText_description_edit"
+                android:id="@+id/editText_description"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
+                android:layout_below="@id/editText_title"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_marginTop="2dp"
                 android:background="@drawable/shape_edit_text_green"
                 android:fadeScrollbars="false"
@@ -88,31 +117,65 @@
                 android:scrollbarStyle="outsideInset"
                 android:scrollbars="vertical"
                 android:textColor="@color/white"
-                android:textColorHint="@color/colorTextGray"
-                android:layout_below="@id/editText_title_edit"
-                />
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_camera_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/editText_description_edit"
-                android:layout_alignEnd="@id/editText_description_edit"
-                android:src="@drawable/photo_camera_24"
-                android:layout_marginEnd="@dimen/_32dp"
-                android:layout_marginBottom="@dimen/_32dp"
-                android:backgroundTint="@color/colorFabEnable"
-                />
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_image_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/editText_description_edit"
-                android:layout_alignEnd="@id/editText_description_edit"
-                android:layout_marginEnd="@dimen/_32dp"
-                android:layout_marginBottom="100dp"
-                android:backgroundTint="@color/colorFabEnable"
-                android:src="@drawable/image_24"
-                />
+                android:textColorHint="@color/colorTextGray" />
+
+            <!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+            <!--                android:id="@+id/fab_camera"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignEnd="@id/editText_description"-->
+            <!--                android:layout_alignBottom="@id/editText_description"-->
+            <!--                android:layout_marginEnd="@dimen/_32dp"-->
+            <!--                android:layout_marginBottom="@dimen/_32dp"-->
+            <!--                android:backgroundTint="@color/colorFabEnable"-->
+            <!--                android:src="@drawable/photo_camera_24" />-->
+
+            <!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+            <!--                android:id="@+id/fab_image_id"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignEnd="@id/editText_description"-->
+            <!--                android:layout_alignBottom="@id/editText_description"-->
+            <!--                android:layout_marginEnd="@dimen/_32dp"-->
+            <!--                android:layout_marginBottom="100dp"-->
+            <!--                android:backgroundTint="@color/colorFabEnable"-->
+            <!--                android:src="@drawable/image_24" />-->
+
+            <!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+            <!--                android:id="@+id/fab_location_id"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignEnd="@id/editText_description"-->
+            <!--                android:layout_alignBottom="@id/editText_description"-->
+            <!--                android:layout_marginEnd="@dimen/_32dp"-->
+            <!--                android:layout_marginBottom="170dp"-->
+            <!--                android:backgroundTint="@color/colorFabEnable"-->
+            <!--                android:src="@drawable/add_location_24" />-->
+
+            <!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+            <!--                android:id="@+id/fab_reminder_id"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignEnd="@id/editText_description"-->
+            <!--                android:layout_alignBottom="@id/editText_description"-->
+            <!--                android:layout_marginEnd="@dimen/_32dp"-->
+            <!--                android:layout_marginBottom="240dp"-->
+            <!--                android:backgroundTint="@color/colorFabEnable"-->
+            <!--                android:src="@drawable/notification_add_24" />-->
         </RelativeLayout>
     </ScrollView>
+
+    <ImageView
+        android:id="@+id/image_view_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_upper_round_corner_up_bg"
+        android:paddingStart="@dimen/_18dp"
+        android:paddingTop="@dimen/_12dp"
+        android:paddingEnd="@dimen/_18dp"
+        android:src="@drawable/arrow_up_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

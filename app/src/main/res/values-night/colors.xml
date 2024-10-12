@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="colorPrimary">#00BCD4</color> <!-- Can be the same, vibrant on dark -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color> <!-- Will act as accent or text color in dark mode -->
+    <color name="colorWhite">#E0E0E0</color> <!-- Use slightly off-white for softer look -->
+
+    <!-- Greens and Accent Colors -->
+    <color name="colorGreenDark">#00796B</color> <!-- Darkened green -->
+    <color name="colorLightGreen">#8BC34A</color> <!-- Softer light green for contrast -->
+    <color name="colorOrange">#FFB74D</color> <!-- Brighter orange for visibility -->
+    <color name="colorRed">#F44336</color> <!-- Use a bright red for warnings -->
+
+    <!-- Background and Inactive Colors -->
+    <color name="colorGrayBg">#303030</color> <!-- Dark gray background for dark mode -->
+    <color name="colorInactiveIcon">#757575</color> <!-- Darkened inactive icon -->
+    <color name="colorInactiveText">#BDBDBD</color> <!-- Lightened for readability -->
+
+    <!-- Custom Background Colors -->
+    <color name="addNoteBGColor">#212121</color> <!-- Dark background for note area -->
+    <color name="colorTransparent">@android:color/transparent</color>
+
+    <!-- Dark Mode Adjustments -->
+    <color name="colorPrimaryDark">#00ACC1</color> <!-- Darkened primary color -->
+    <color name="colorAccent">#0097A7</color> <!-- Accent color for dark mode -->
+
+    <!-- SnackBar Colors -->
+    <color name="colorSnackBarWarning">#FF9800</color>
+    <color name="colorSnackBarError">#EF5350</color>
+    <color name="colorSnackBarInfo">#29B6F6</color> <!-- Brighter blue for information -->
+
+    <!-- Background for Errors and Warnings -->
+    <color name="colorErrorBg">#B71C1C</color>
+    <color name="colorWarningBg">#FF6F00</color>
+    <color name="colorInfoBg">#0277BD</color>
+
+    <!-- FAB Colors -->
+    <color name="colorFabEnable">#FFEB3B</color> <!-- Use bright yellow for enabled FAB -->
+    <color name="colorFabDisable">#757575</color> <!-- Darkened gray for disabled state -->
+
+    <!-- Translucent White -->
+    <color name="colorWhiteTrans40">#66FFFFFF</color> <!-- Use translucent white for overlay text -->
+
+    <!-- Edit Text and UI Element Colors -->
+    <color name="colorBg">#37474F</color> <!-- Dark blue-gray for background -->
+    <color name="colorEditTextAccent">#80CBC4</color> <!-- Softened edit text accent -->
+    <color name="colorEditTextHint">#9E9E9E</color> <!-- Lighter gray for hint text -->
+    <color name="colorEditText">#FAFAFA</color> <!-- White text for dark background -->
+    <color name="colorGreen">#4CAF50</color> <!-- Brighter green for better contrast -->
+
+    <!-- Grays and Dividers -->
+    <color name="colorGrayFa">#FAFAFA</color> <!-- Keep it bright white -->
+    <color name="colorGrayDivider">#616161</color> <!-- Darkened divider -->
+    <color name="colorGrayBorder">#757575</color> <!-- Dark gray border -->
+    <color name="colorDisable">#9E9E9E</color> <!-- Light gray for disabled elements -->
+
+    <!-- Text Colors -->
+    <color name="colorTextBlack">#ECEFF1</color> <!-- Light gray for readable text -->
+    <color name="colorTextBlackLight">#CFD8DC</color> <!-- Slightly lighter for contrast -->
+    <color name="colorTextBlack60">#99ECEFF1</color> <!-- 60% opacity for muted text -->
+    <color name="colorTextBlack40">#66ECEFF1</color> <!-- 40% opacity for even lighter text -->
+    <color name="colorTextGray">#B0BEC5</color> <!-- Medium gray for text -->
+    <color name="colorTextGrayLight">#CFD8DC</color> <!-- Lighter gray for secondary text -->
+    <color name="colorTextWhite">#FFFFFF</color> <!-- White text color for dark mode -->
+    <color name="colorTextGreen">#80CBC4</color> <!-- Softer green for text -->
+    <color name="colorTextGreenLight">#B2DFDB</color> <!-- Light green text for readability -->
+    <color name="colorTextRed">#FF5252</color> <!-- Bright red for text warnings -->
+    <color name="colorTextOrange">#FFB74D</color> <!-- Brighter orange text -->
+    <color name="colorTextLightGreen">#AED581</color> <!-- Softer light green text -->
+
+    <!-- Menu Icon Colors -->
+    <color name="colorMenuIconActive">#00ACC1</color> <!-- Active state color for icons -->
+    <color name="colorMenuIconInactive">#616161</color> <!-- Dark gray for inactive icons -->
+    <color name="colorMenuTextActive">#ECEFF1</color> <!-- Light text for active state -->
+    <color name="colorMenuTextInactive">#99ECEFF1</color> <!-- Muted text for inactive state -->
+
+    <!-- Stress Levels Background Colors -->
+    <color name="colorStressBg">#424242</color> <!-- Darker stress background -->
+    <color name="colorStressLowBg">#303030</color> <!-- Low stress background -->
+    <color name="colorStressMidBg">#FF8C00</color> <!-- Mid-level stress in orange -->
+    <color name="colorStressHighBg">#D32F2F</color> <!-- High stress in deep red -->
+
+    <!-- Chart Colors -->
+    <color name="colorChartGray">#BDBDBD</color> <!-- Gray for chart elements -->
+    <color name="colorChartOrange">#FFB74D</color> <!-- Brighter orange for charts -->
+    <color name="colorChartLightGreen">#AED581</color> <!-- Light green for chart areas -->
+    <color name="colorChartGreen">#4CAF50</color> <!-- Green for charts -->
+    <color name="colorChartRed">#FF5252</color> <!-- Red for charts -->
+
+    <!-- Line Colors for Charts -->
+    <color name="colorLineLightGreen">#AED581</color> <!-- Light green for lines -->
+    <color name="colorLineGreen">#80CBC4</color> <!-- Green lines for contrast -->
+    <color name="colorLineOrange">#FF8C00</color> <!-- Bright orange lines -->
+    <color name="colorLineRed">#D32F2F</color> <!-- Red lines for charts -->
+
+    <!-- Tools Background Colors -->
+    <color name="colorToolsBgAsh">#424242</color> <!-- Darkened tool background -->
+    <color name="soft_purple">#B39DDB</color> <!-- Softer purple for dark mode -->
+
+    <!-- Input Field Background and Border Colors -->
+    <color name="light_gray">#424242</color> <!-- Darkened input background -->
+    <color name="soft_green">#66BB6A</color> <!-- Softer green for buttons -->
+    <color name="placeholder_text">#9E9E9E</color> <!-- Lightened placeholder text -->
+
+    <!-- Header and Main Text Colors -->
+    <color name="dark_purple">#9575CD</color> <!-- Soft purple for header text -->
+    <color name="light_purple">#B39DDB</color> <!-- Light purple for border inputs -->
+</resources>

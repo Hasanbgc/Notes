@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="4"
+        android:gravity="center"
         android:orientation="vertical"
         android:paddingStart="@dimen/_8dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -22,19 +23,21 @@
             android:id="@+id/location"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_112dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_gravity="center_vertical"
             >
             <ImageView
-                android:layout_width="@dimen/_56dp"
+                android:layout_width="@dimen/_48dp"
+                android:padding="@dimen/_8dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/add_location_24"
                 />
             <TextView
-                android:paddingStart="@dimen/_16dp"
+                android:paddingStart="@dimen/_12dp"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_32dp"
+                android:layout_height="wrap_content"
                 android:text="Location"
-                android:textSize="@dimen/_28sp"
+                android:textSize="@dimen/_16sp"
                 android:layout_gravity="center_vertical"
                 />
 
@@ -44,19 +47,20 @@
             android:id="@+id/image"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_112dp"
+            android:layout_height="@dimen/_60dp"
             >
             <ImageView
-                android:layout_width="@dimen/_56dp"
+                android:layout_width="@dimen/_48dp"
+                android:padding="@dimen/_8dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/image_24"
                 />
             <TextView
-                android:paddingStart="@dimen/_16dp"
+                android:paddingStart="@dimen/_12dp"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_32dp"
+                android:layout_height="wrap_content"
                 android:text="Image"
-                android:textSize="@dimen/_28sp"
+                android:textSize="@dimen/_16sp"
                 android:layout_gravity="center_vertical"
                 />
 
@@ -66,19 +70,20 @@
             android:id="@+id/camera"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_112dp"
+            android:layout_height="@dimen/_60dp"
             >
             <ImageView
-                android:layout_width="@dimen/_56dp"
+                android:layout_width="@dimen/_48dp"
+                android:padding="@dimen/_8dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/photo_camera_24"
                 />
             <TextView
-                android:paddingStart="@dimen/_16dp"
+                android:paddingStart="@dimen/_12dp"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_32dp"
+                android:layout_height="wrap_content"
                 android:text="Camera"
-                android:textSize="@dimen/_28sp"
+                android:textSize="@dimen/_16sp"
                 android:layout_gravity="center_vertical"
                 />
 
@@ -88,19 +93,20 @@
             android:id="@+id/reminder"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_112dp"
+            android:layout_height="@dimen/_60dp"
             >
             <ImageView
-                android:layout_width="@dimen/_56dp"
+                android:layout_width="@dimen/_48dp"
+                android:padding="@dimen/_8dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/notification_add_24"
                 />
             <TextView
-                android:paddingStart="@dimen/_16dp"
+                android:paddingStart="@dimen/_12dp"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_32dp"
+                android:layout_height="wrap_content"
                 android:text="Reminder"
-                android:textSize="@dimen/_28sp"
+                android:textSize="@dimen/_16sp"
                 android:layout_gravity="center_vertical"
                 />
 

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -28,7 +29,9 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.example.tempnavigation.R
+import com.example.tempnavigation.alarms.AlarmMediaPlayer
 import com.example.tempnavigation.models.NoteModel
 import com.example.tempnavigation.utilities.DateUtil
 import com.example.tempnavigation.utilities.FileUtil
@@ -57,8 +60,14 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
     private lateinit var description: String
     private lateinit var bitmap: Bitmap
     private lateinit var imageUri:String
+    private lateinit var location:Pair<Double,Double>
+    private lateinit var alarmTime:String
+    private  var savedTime:Long = 0
     private var imageTitle = ""
-    private var id: Int = 0
+    private var id: Long = 0L
+    private lateinit var alarmMediaPlayer:AlarmMediaPlayer
+    private var favourite = false
+    private var archive = false
     //endregion
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,17 +107,17 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
     }
 
     private fun initView() {
-        editTextTitle = rootView.findViewById(R.id.editText_title_edit)
-        editTextDescription = rootView.findViewById(R.id.editText_description_edit)
-        discardButton = rootView.findViewById(R.id.button_discard_edit)
-        imageView = rootView.findViewById(R.id.image_view_edit)
-        imageHolder = rootView.findViewById(R.id.image_holder_edit)
-        imageFab = rootView.findViewById(R.id.fab_image_edit)
-        cameraFab = rootView.findViewById(R.id.fab_camera_edit)
-        discardButton = rootView.findViewById(R.id.button_discard_edit)
-        imageFab.setOnClickListener(this)
-        cameraFab.setOnClickListener(this)
-        discardButton.setOnClickListener(this)
+//        editTextTitle = rootView.findViewById(R.id.editText_title_edit)
+//        editTextDescription = rootView.findViewById(R.id.editText_description_edit)
+//        discardButton = rootView.findViewById(R.id.button_discard_edit)
+//        imageView = rootView.findViewById(R.id.image_view_edit)
+//        imageHolder = rootView.findViewById(R.id.image_holder_edit)
+//        imageFab = rootView.findViewById(R.id.fab_image_edit)
+//        cameraFab = rootView.findViewById(R.id.fab_camera_edit)
+//        discardButton = rootView.findViewById(R.id.button_discard_edit)
+//        imageFab.setOnClickListener(this)
+//        cameraFab.setOnClickListener(this)
+//        discardButton.setOnClickListener(this)
     }
 
     private fun observeLiveData() {
@@ -117,11 +126,19 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
             title = noteModel.title
             description = noteModel.description
             imageUri = noteModel.imageUri
+            location = Pair(noteModel.locationLat,noteModel.locationLong)
+            alarmTime = noteModel.alarmTime
+            savedTime = noteModel.savedTime
+            favourite = noteModel.favourite
+            archive = noteModel.archive
+
             editTextTitle.setText(title)
             editTextDescription.setText(description)
+
             if(imageUri!="") {
                 imageHolder.visibility = View.VISIBLE
-                imageView.setImageURI(imageUri.toUri())
+                Glide.with(this).load(imageUri).into(imageView)
+                //imageView.setImageURI(imageUri.toUri())
             }
         })
     }
@@ -146,7 +163,7 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
 
     private fun delete() {
         hideSoftKeyboard()
-        viewModel.delete(NoteModel(id,title,description,1,imageUri), {
+        viewModel.delete(NoteModel(id,title,description,location.first,location.second,imageUri,alarmTime,savedTime,favourite,archive), {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(context, "note deleted", Toast.LENGTH_SHORT).show()
                 clear()
@@ -162,8 +179,9 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
     private fun updateNote() {
         title = editTextTitle.text.trim().toString()
         description = editTextDescription.text.trim().toString()
+        val updatedTime = DateUtil.getCurrentTime()
 
-        viewModel.update(NoteModel(id,title,description,1,imageUri), onSuccessUpdate = {
+        viewModel.update(NoteModel(id,title,description,location.first,location.second,imageUri,alarmTime,updatedTime,favourite,archive), onSuccessUpdate = {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(requireContext(), "note Updated", Toast.LENGTH_SHORT).show()
             }
@@ -216,8 +234,19 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
         }
     }
     private fun openCamera(){
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        captureImage.launch(cameraIntent)
+//        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//        captureImage.launch(cameraIntent)
+       playAlarm()
+    }
+    private fun playAlarm() {
+        alarmMediaPlayer = AlarmMediaPlayer(requireContext())
+        alarmMediaPlayer.prepareMediaPlayer(R.raw.alarm, requireContext().packageName)
+
+        alarmMediaPlayer.startMediaPlayer().also { Log.d(TAG,"alarm player has been started")}
+
+//        alarmMediaPlayer.setOnCompletionListener{
+//         alarmMediaPlayer.releaseMediaPlayer()
+//        }.also {Log.d(TAG,"alarm player has been stopped")  }
     }
 //    private fun getCapturedImage(capturedImageUri: Uri): Bitmap {
 //        return when {
@@ -230,15 +259,20 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
 //    }
 
     override fun onClick(v: View?) {
-        when(v?.id){
-            R.id.fab_image_edit -> openResultFragment()
-            R.id.fab_camera_edit -> openCamera()
-            R.id.button_discard_edit->{
-                imageView.setImageResource(0)
-                imageUri = ""
-                imageHolder.visibility = View.GONE
-            }
-        }
+//        when(v?.id){
+//            R.id.fab_image_edit -> openResultFragment()
+//            R.id.fab_camera_edit -> playAlarm()
+//            R.id.button_discard_edit->{
+//                imageView.setImageResource(0)
+//                imageUri = ""
+//                imageHolder.visibility = View.GONE
+//            }
+//        }
     }
 
+    override fun onDestroy() {
+        alarmMediaPlayer.releaseMediaPlayer()
+        super.onDestroy()
+
+    }
 }

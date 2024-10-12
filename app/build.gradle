@@ -41,6 +41,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    viewBinding{
+        enabled = true
+    }
 }
 
 dependencies {
@@ -100,6 +103,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     //Kotlin Coroutine
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
-    //picasso for image loading from url
-    implementation 'com.squareup.picasso:picasso:2.8'
+    //Glide for image loading
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
 }
