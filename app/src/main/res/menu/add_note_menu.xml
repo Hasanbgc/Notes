@@ -15,4 +15,9 @@
         android:enabled="false"
         android:iconTint="@color/add_menu_item_color"
         android:icon="@drawable/delete_24"/>
+<!--    <item-->
+<!--        android:id="@+id/switchItem"-->
+<!--        app:showAsAction="always"-->
+<!--        android:title=""-->
+<!--        app:actionLayout="@layout/switch_layout" />-->
 </menu>

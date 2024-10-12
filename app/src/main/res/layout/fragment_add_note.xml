@@ -86,12 +86,13 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/_2dp"
-                android:autofillHints="name"
+                android:autofillHints="emailAddress"
                 android:background="@drawable/shape_edit_text_green"
                 android:focusable="true"
                 android:focusedByDefault="true"
                 android:hint="Title"
-                android:inputType="text"
+                android:textStyle="bold"
+                android:inputType="textWebEmailAddress"
                 android:padding="8dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/colorTextGray" />
@@ -111,7 +112,7 @@
                 android:focusable="true"
                 android:gravity="start|top"
                 android:hint="@string/description"
-                android:inputType="textMultiLine"
+                android:inputType="textMultiLine|textEmailAddress"
                 android:minLines="10"
                 android:padding="8dp"
                 android:scrollbarStyle="outsideInset"
@@ -119,49 +120,49 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/colorTextGray" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/editText_description"
-                android:layout_alignBottom="@id/editText_description"
-                android:layout_marginEnd="@dimen/_32dp"
-                android:layout_marginBottom="@dimen/_32dp"
-                android:backgroundTint="@color/colorFabEnable"
-                android:src="@drawable/photo_camera_24" />
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/fab_camera"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignEnd="@id/editText_description"-->
+<!--                android:layout_alignBottom="@id/editText_description"-->
+<!--                android:layout_marginEnd="@dimen/_32dp"-->
+<!--                android:layout_marginBottom="@dimen/_32dp"-->
+<!--                android:backgroundTint="@color/colorFabEnable"-->
+<!--                android:src="@drawable/photo_camera_24" />-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_image_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/editText_description"
-                android:layout_alignBottom="@id/editText_description"
-                android:layout_marginEnd="@dimen/_32dp"
-                android:layout_marginBottom="100dp"
-                android:backgroundTint="@color/colorFabEnable"
-                android:src="@drawable/image_24" />
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/fab_image_id"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignEnd="@id/editText_description"-->
+<!--                android:layout_alignBottom="@id/editText_description"-->
+<!--                android:layout_marginEnd="@dimen/_32dp"-->
+<!--                android:layout_marginBottom="100dp"-->
+<!--                android:backgroundTint="@color/colorFabEnable"-->
+<!--                android:src="@drawable/image_24" />-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_location_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/editText_description"
-                android:layout_alignBottom="@id/editText_description"
-                android:layout_marginEnd="@dimen/_32dp"
-                android:layout_marginBottom="170dp"
-                android:backgroundTint="@color/colorFabEnable"
-                android:src="@drawable/add_location_24" />
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/fab_location_id"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignEnd="@id/editText_description"-->
+<!--                android:layout_alignBottom="@id/editText_description"-->
+<!--                android:layout_marginEnd="@dimen/_32dp"-->
+<!--                android:layout_marginBottom="170dp"-->
+<!--                android:backgroundTint="@color/colorFabEnable"-->
+<!--                android:src="@drawable/add_location_24" />-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_reminder_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/editText_description"
-                android:layout_alignBottom="@id/editText_description"
-                android:layout_marginEnd="@dimen/_32dp"
-                android:layout_marginBottom="240dp"
-                android:backgroundTint="@color/colorFabEnable"
-                android:src="@drawable/notification_add_24" />
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:id="@+id/fab_reminder_id"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignEnd="@id/editText_description"-->
+<!--                android:layout_alignBottom="@id/editText_description"-->
+<!--                android:layout_marginEnd="@dimen/_32dp"-->
+<!--                android:layout_marginBottom="240dp"-->
+<!--                android:backgroundTint="@color/colorFabEnable"-->
+<!--                android:src="@drawable/notification_add_24" />-->
         </RelativeLayout>
     </ScrollView>
 

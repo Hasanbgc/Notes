@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import com.example.tempnavigation.R
+import com.example.tempnavigation.utilities.LocationManager
 import com.example.tempnavigation.utilities.enums.NavigationPage
 import com.example.tempnavigation.viewmodels.MainViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -34,11 +35,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.button.MaterialButton
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(),LocationManager.LocationUpdateListener {
     val TAG = "MapFragment"
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var rootView: View
     private lateinit var setButton: MaterialButton
+    private lateinit var locationManager: LocationManager
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
@@ -63,10 +65,9 @@ class MapsFragment : Fragment() {
         setHasOptionsMenu(true)
         initView()
         initValues()
+        locationManager = LocationManager(requireContext())
+        locationManager.setLocationUpdateListener(this)
 
-        createLocationCallBack()
-        createLocationRequest()
-        getLocation()
         return rootView
     }
     private fun initView() {
@@ -87,18 +88,19 @@ class MapsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         mapFragment.onResume()
+        locationManager.startLocationUpdates()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        locationManager.stopLocationUpdates()
     }
     private fun initValues() {
         mainViewModel.showBottomNav.value = false
         mainViewModel.title.value = "Map"
 
-        locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-//        currentLocation = Location("0.0,0.0")
-//        currentLocation.longitude = 0.0
-//        currentLocation.latitude = 0.0
+        //locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -116,41 +118,7 @@ class MapsFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
-    fun createLocationRequest() {
-        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,5000).apply {
-            setMinUpdateDistanceMeters(10f)
-            setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
-            setWaitForAccurateLocation(true)
-        }.build()
-        Log.d(TAG, "createLocationRequest: ${locationRequest}")
-    }
-    fun getLocation(){
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper())
-        }
-    }
-    fun createLocationCallBack(){
-        locationCallback = object : LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.let { it ->
-                    for (location in it.locations){
-                        handleLocation(location)
-                        Log.d(TAG,"$location")
-                    }
-                }
-            }
-        }
-    }
+
     private fun updateMapWithCurrentLocation() {
         val currentLatLng = LatLng(currentLatitude, currentLongitude)
         googleMap.clear()
@@ -189,15 +157,62 @@ class MapsFragment : Fragment() {
             return@setOnMyLocationButtonClickListener true
         }
     }
-    fun  handleLocation(location: Location){
-        currentLatitude = location.latitude
-        currentLongitude = location.longitude
+    override fun onLocationUpdated(latitude: Double, longitude: Double) {
+        currentLatitude = latitude
+        currentLongitude = longitude
         updateMapWithCurrentLocation()
-        Log.d(TAG,"current Location = $location")
-        Toast.makeText(requireContext(),"My current Location is lat:$currentLatitude Long:$currentLongitude", Toast.LENGTH_SHORT).show()
     }
-    fun showLocation(){
-        Toast.makeText(requireContext(),"My current Location is lat:${currentLatitude} Long:${currentLongitude}",
-            Toast.LENGTH_SHORT).show()
+
+    override fun onDestroy() {
+        super.onDestroy()
+        locationManager.stopLocationUpdates()
     }
+//    fun  handleLocation(location: Location){
+//        currentLatitude = location.latitude
+//        currentLongitude = location.longitude
+//        updateMapWithCurrentLocation()
+//        Log.d(TAG,"current Location = $location")
+//        Toast.makeText(requireContext(),"My current Location is lat:$currentLatitude Long:$currentLongitude", Toast.LENGTH_SHORT).show()
+//    }
+//    fun showLocation(){
+//        Toast.makeText(requireContext(),"My current Location is lat:${currentLatitude} Long:${currentLongitude}",
+//            Toast.LENGTH_SHORT).show()
+//    }
+    //    fun createLocationRequest() {
+//        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,5000).apply {
+//            setMinUpdateDistanceMeters(10f)
+//            setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+//            setWaitForAccurateLocation(true)
+//        }.build()
+//        Log.d(TAG, "createLocationRequest: ${locationRequest}")
+//    }
+//    fun getLocation(){
+//        if (ActivityCompat.checkSelfPermission(
+//                requireContext(),
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                requireContext(),
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//            locationClient.requestLocationUpdates(
+//                locationRequest,
+//                locationCallback,
+//                Looper.getMainLooper())
+//        }
+//    }
+//    fun createLocationCallBack(){
+//        locationCallback = object : LocationCallback(){
+//            override fun onLocationResult(locationResult: LocationResult) {
+//                locationResult.let { it ->
+//                    for (location in it.locations){
+//                        handleLocation(location)
+//                        Log.d(TAG,"$location")
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
 }

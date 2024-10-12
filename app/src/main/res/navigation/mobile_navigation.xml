@@ -8,7 +8,8 @@
         android:id="@+id/navigation_home"
         android:name="com.example.tempnavigation.views.fragments.HomeFragment"
         tools:layout="@layout/fragment_home"
-        />
+        android:launchMode = "singleTop">
+    </fragment>
     <fragment
         android:id="@+id/navigation_favourite"
         android:name="com.example.tempnavigation.views.fragments.FavouriteFragment"
@@ -38,6 +39,16 @@
         android:name="com.example.tempnavigation.views.fragments.MapsFragment"
         tools:layout="@layout/fragment_maps"
         />
+    <fragment
+        android:id="@+id/navigation_archive"
+        android:name="com.example.tempnavigation.views.fragments.ArchiveFragment"
+        tools:layout="@layout/fragment_archive" />
+    <action
+        android:id="@+id/action_mobile_navigation_pop"
+        app:popUpTo="@id/mobile_navigation"
+        app:popUpToInclusive="true"
+        app:launchSingleTop="true" />
+
 
 
 </navigation>

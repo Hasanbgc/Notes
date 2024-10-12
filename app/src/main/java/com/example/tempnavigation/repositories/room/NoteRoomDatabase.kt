@@ -4,13 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.tempnavigation.repositories.room.dao.HomeViewDao
 import com.example.tempnavigation.utilities.Constant
 import com.example.tempnavigation.repositories.room.dao.NoteDao
+import com.example.tempnavigation.repositories.room.entity.HomeViewEntity
 import com.example.tempnavigation.repositories.room.entity.NoteEntity
 
-@Database(entities = [NoteEntity::class], version = Constant.DB_Version, exportSchema = false)
+@Database(entities = [NoteEntity::class,HomeViewEntity::class], version = Constant.DB_Version, exportSchema = false)
 abstract class NoteRoomDatabase: RoomDatabase() {
     abstract fun noteDao(): NoteDao
+    abstract fun homeViewDao():HomeViewDao
 
     companion object {
         @Volatile

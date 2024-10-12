@@ -1,23 +1,36 @@
 package com.example.tempnavigation.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.example.tempnavigation.models.NoteModel
+import com.example.tempnavigation.repositories.HomeViewRepository
 import com.example.tempnavigation.repositories.NoteRepository
 import com.example.tempnavigation.repositories.room.NoteRoomDatabase
+import com.example.tempnavigation.repositories.room.entity.HomeViewEntity
 import com.example.tempnavigation.repositories.room.entity.NoteEntity
 
-class HomeFragmentViewModel(application: Application): AndroidViewModel(application) {
+class HomeFragmentViewModel(application: Application,private val savedStateHandle: SavedStateHandle): AndroidViewModel(application) {
     private val TAG ="HomeFragmentViewModel"
     private val noteRepository: NoteRepository
-
+    private val homeViewRepositroy:HomeViewRepository
+    private var isStaggrated:Boolean = true
+    private val KEY_BOOLEAN = "boolean_key"
+    val longPressed = MutableLiveData<Boolean>().apply { false }
     init {
         val noteDb = NoteRoomDatabase.getDatabase(application)
         noteRepository = NoteRepository(noteDb.noteDao())
+        homeViewRepositroy = HomeViewRepository(noteDb.homeViewDao())
     }
-    val allNote = noteRepository.getAllNotes()
+    var allNote = noteRepository.getAllNotes()
+    fun updateViewState(viewState:Boolean){
+        val homeViewEntity = HomeViewEntity(1,viewState)
+        homeViewRepositroy.update(homeViewEntity)
+    }
+    fun getHomeViewStyle() = homeViewRepositroy.getViewState()
 
     fun insert(
         noteModel: NoteModel,
@@ -31,29 +44,33 @@ class HomeFragmentViewModel(application: Application): AndroidViewModel(applicat
         })
     }
 
-    fun update(
-        id: Int,
-        title: String,
-        description: String,
-        priority: Int,
-        onSuccessUpdate: () -> Unit,
-        onFailedUpdate: (message: String) -> Unit
-    ) {
-        noteRepository.getNoteById(id,
-            onSuccess = { noteEntity ->
-                noteEntity.title = title
-                noteEntity.priority = priority
-                noteEntity.description = description
-                noteRepository.update(noteEntity,
-                    onSuccess = {
-                        onSuccessUpdate()
-                    }, onFailed = {
-                        onFailedUpdate(it)
-                    })
-            }, onFailed = {
-                onFailedUpdate(it)
-            })
-
+//    fun update(
+//        id: Long,
+//        title: String,
+//        description: String,
+//        location: Pair<Double,Double>,
+//        onSuccessUpdate: () -> Unit,
+//        onFailedUpdate: (message: String) -> Unit
+//    ) {
+//        noteRepository.getNoteById(id,
+//            onSuccess = { noteEntity ->
+//                noteEntity.title = title
+//                noteEntity.locationLat = location.first
+//                noteEntity.locationLong = location.second
+//                noteEntity.description = description
+//                noteRepository.update(noteEntity,
+//                    onSuccess = {
+//                        onSuccessUpdate()
+//                    }, onFailed = {
+//                        onFailedUpdate(it)
+//                    })
+//            }, onFailed = {
+//                onFailedUpdate(it)
+//            })
+//
+//    }
+    fun update(note:NoteModel,onSuccess: () -> Unit,onFailed: (message: String) -> Unit){
+        noteRepository.update(note.toNoteEntity(),{ onSuccess() },{ onFailed(it) })
     }
 
     fun delete(
@@ -61,6 +78,8 @@ class HomeFragmentViewModel(application: Application): AndroidViewModel(applicat
         onSuccess: () -> Unit,
         onFailed: (message: String) -> Unit
     ) {
+        val functionName = Throwable().stackTrace[1].methodName
+        Log.d("HomeViewModel","called by $functionName")
         noteRepository.delete(
            noteModel.toNoteEntity(),
             onSuccess = {
@@ -98,7 +117,7 @@ class HomeFragmentViewModel(application: Application): AndroidViewModel(applicat
     }
 
     fun getNote(
-        id: Int,
+        id: Long,
         onSuccess: (note: NoteEntity) -> Unit,
         onFailed: (message: String) -> Unit
     ) {
@@ -117,7 +136,7 @@ class HomeFragmentViewModel(application: Application): AndroidViewModel(applicat
         var modelList =  listOf<NoteModel>()
         list.value.let {noteEntityList->
             modelList = noteEntityList?.map { noteEntity->
-                NoteModel(noteEntity.id,noteEntity.title,noteEntity.description,noteEntity.priority,noteEntity.imageUri)
+                NoteModel(noteEntity.id,noteEntity.title,noteEntity.description,noteEntity.locationLat,noteEntity.locationLong,noteEntity.imageUri,noteEntity.alarmTime,noteEntity.savedTime,noteEntity.favourite,noteEntity.archive)
             }!!
         }
         return modelList.toLiveData()

@@ -4,11 +4,18 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.bumptech.glide.load.engine.Resource
 import com.example.tempnavigation.R
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 
 class DialogUtils:Dialogs {
 
@@ -57,5 +64,26 @@ class DialogUtils:Dialogs {
         onYesClick: () -> Unit
     ) {
         TODO("Not yet implemented")
+    }
+
+    companion object {
+        fun toast(context: Context, string: String) {
+            Toast(context).cancel()
+            Toast.makeText(context, string, Toast.LENGTH_SHORT).show()
+        }
+        fun showSnackBarWithActionButton(context:Context,view: View, msg:Int, confirmationMsg:Int,onUndo: ()->Unit,onTimeout: ()->Unit){
+            Snackbar.make(view,msg,
+                Snackbar.LENGTH_LONG).setAction("Undo"){
+                onUndo()
+                toast(context,"Deleted note is recovered")
+            }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>(){
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT){
+                        onTimeout()
+                        toast(context,context.resources.getString(confirmationMsg))
+                    }
+                }
+            }).show()
+        }
     }
 }
