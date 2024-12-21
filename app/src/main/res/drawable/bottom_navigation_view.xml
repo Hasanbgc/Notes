@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/material_dynamic_primary20" /> <!-- Background color -->
+    <corners android:radius="16dp" /> <!-- Rounded corners -->
+    <padding android:left="8dp" android:top="8dp" android:right="8dp" android:bottom="8dp" />
+    <shadow
+        android:shadowColor="#80000000"
+    android:shadowDx="0"
+    android:shadowDy="5"
+    android:shadowRadius="10.0" />
+</shape>

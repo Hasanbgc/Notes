@@ -92,6 +92,14 @@
     <!-- Light Purple (Border Color for Inputs) -->
     <color name="light_purple">#D1C4E9</color>
 
+    <color name="neon_green">#32CD32</color>
+    <color name="neon_pink">#FF1493</color>
+    <color name="megenta_glow">#FF80AB</color>
+    <color name="cyan_glow">#A7FFEB</color>
+    <color name="golden_glow">#FFE57F</color>
+    <color name="bottomNavBar">#003549</color>
+
+
 </resources>
 
 

@@ -29,7 +29,7 @@ class NoteRepository(private var noteDao: NoteDao) {
 //        noteDao = noteDb.noteDao()
 //        //allNotes =
 //    }
-    fun insert(note: NoteEntity, onSuccess:(id:Long)->Unit, onFailed: (message: String) -> Unit){
+    fun insert(note: NoteEntity, onSuccess:(id: String)->Unit, onFailed: (message: String) -> Unit){
         insertNoteAsyncTask(note, onSuccess = {id ->
             onSuccess(id)
         }, onFailed = { it->
@@ -55,7 +55,7 @@ class NoteRepository(private var noteDao: NoteDao) {
             }
         })
     }
-    fun getNoteById(id:Long,onSuccess: (noteEntity:NoteEntity) -> Unit,onFailed: (message: String) -> Unit){
+    fun getNoteById(id: String, onSuccess: (noteEntity:NoteEntity) -> Unit, onFailed: (message: String) -> Unit){
         getNote(id,onSuccess={noteEntity->
             onSuccess(noteEntity)
         }, onFailed = {
@@ -87,13 +87,13 @@ class NoteRepository(private var noteDao: NoteDao) {
     fun getAllNotes() = noteDao.getAllNotes()
 
 
-    private fun insertNoteAsyncTask(note: NoteEntity,onSuccess: (id:Long) ->Unit,onFailed:(message:String)->Unit){
-        var id = 0L
+    private fun insertNoteAsyncTask(note: NoteEntity, onSuccess: (id: String) ->Unit, onFailed:(message:String)->Unit){
+       // var id = ""
         CoroutineScope(IO).launch {
-            id = noteDao.insert(note)
+            noteDao.insert(note)
         }.invokeOnCompletion { throwable->
         if (throwable == null) {
-            onSuccess(id)
+            onSuccess(note.id)
         }else{
             onFailed(throwable.message.toString())
             throw Exception(throwable.message)
@@ -135,7 +135,7 @@ class NoteRepository(private var noteDao: NoteDao) {
     }
     private fun deleteAllNoteAsyncTask(onSuccess: () -> Unit,onFailed: (message: String) -> Unit){
         CoroutineScope(IO).launch {
-            noteDao.deleteAllNotes()
+            //noteDao.deleteAllNotes()
         }.invokeOnCompletion { throwable->
             if(throwable == null) {
                 onSuccess()
@@ -147,21 +147,21 @@ class NoteRepository(private var noteDao: NoteDao) {
         }
     }
     private suspend fun getAllNoteAsyncTask(onSuccess: (LiveData<List<NoteEntity>>,msg:String) -> Unit, onFailed: (message: String) -> Unit){
-        withContext(Dispatchers.IO) {
+        withContext(IO) {
            try{
                val noteList = noteDao.getAllNotes()
-               withContext(Dispatchers.Main){
+               withContext(Main){
                    onSuccess(noteList,"Successfully got the list")
                }
            }catch (e:Exception){
-               withContext(Dispatchers.Main){
+               withContext(Main){
                    e?.message?.let { onFailed(it) }
                }
            }
         }
     }
-    private fun getNote(id:Long,onSuccess: (note: NoteEntity) -> Unit,onFailed: (message: String) -> Unit){
-        var noteEntity  =NoteEntity(0,"","",0.0,0.0,"","",0,false,false)
+    private fun getNote(id: String, onSuccess: (note: NoteEntity) -> Unit, onFailed: (message: String) -> Unit){
+        var noteEntity  = NoteEntity.emptyNoteEntity()
         CoroutineScope(IO).launch {
            noteEntity = noteDao.getNote(id)
         }.invokeOnCompletion { throwable->
@@ -173,7 +173,7 @@ class NoteRepository(private var noteDao: NoteDao) {
         }
     }
     private fun getNotebyTitle(title:String,onSuccess: (note: NoteEntity) -> Unit,onFailed: (message: String) -> Unit){
-        var noteEntity  =NoteEntity(0,"","",0.0,0.0,"","",0,false,false)
+        var noteEntity  = NoteEntity.emptyNoteEntity()
         CoroutineScope(IO).launch {
             Log.d(TAG, "getNotebyTitle: $title")
             noteEntity = noteDao.getNoteByTitle(title)

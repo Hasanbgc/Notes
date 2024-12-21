@@ -1,3 +1,4 @@
+
 package com.example.tempnavigation.services
 
 import android.app.NotificationManager
@@ -27,7 +28,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-class LocationComparatorService : Service() {
+/*class LocationComparatorService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationManager: LocationManager
@@ -44,7 +45,7 @@ class LocationComparatorService : Service() {
     override fun onCreate() {
         super.onCreate()
         locationManager = LocationManager(applicationContext)
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         viewModelStore = ViewModelStore()
         val factory = object : ViewModelProvider.Factory{
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -53,7 +54,7 @@ class LocationComparatorService : Service() {
         }
         lcsViewModel = ViewModelProvider(viewModelStore,factory)[LocationCompServiceViewModel::class.java]
         //startForeground()
-        val intentExtra = IntentFilter("LIST")
+        IntentFilter("LIST")
         startLocationUpdate()
 
 
@@ -61,13 +62,13 @@ class LocationComparatorService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if(intent != null){
-            val list_data = intent.getIntegerArrayListExtra("LIST")
-            val listData = intent.getLongArrayExtra("LIST")
+            intent.getIntegerArrayListExtra("LIST")
+            val listData = intent.getStringExtra("LIST")
             //val context:Context = intent.extras?.get("Context") as Context
             if (listData != null) {
                 for(i in listData){
-                    lcsViewModel.getNote(listData[i.toInt()],{ it->
-                       val noteModel =it.toNoteModel()
+                    lcsViewModel.getNote(listData[i],{ it->
+                       it.toNoteModel()
                         val location = Location("")
                         if(it.locationLat != 0.0 && it.locationLong!=0.0) {
                             location.latitude = it.locationLat
@@ -169,4 +170,5 @@ class LocationComparatorService : Service() {
         return this < Value
     }
 
-}
+}*/
+

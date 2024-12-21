@@ -1,6 +1,7 @@
 package com.example.tempnavigation.utilities
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -66,24 +67,30 @@ class DialogUtils:Dialogs {
         TODO("Not yet implemented")
     }
 
+    override fun progressDialog(context: Context) {
+        TODO("Not yet implemented")
+    }
+
+
+    override fun showSnackBarWithActionButton(context:Context,view: View, msg:Int, confirmationMsg:Int,onUndo: ()->Unit,onTimeout: ()->Unit){
+        Snackbar.make(view,msg,
+            Snackbar.LENGTH_LONG).setAction("Undo"){
+            onUndo()
+            toast(context,"Deleted note is recovered")
+        }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>(){
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT){
+                    onTimeout()
+                    toast(context,context.resources.getString(confirmationMsg))
+                }
+            }
+        }).show()
+    }
+
     companion object {
         fun toast(context: Context, string: String) {
             Toast(context).cancel()
             Toast.makeText(context, string, Toast.LENGTH_SHORT).show()
-        }
-        fun showSnackBarWithActionButton(context:Context,view: View, msg:Int, confirmationMsg:Int,onUndo: ()->Unit,onTimeout: ()->Unit){
-            Snackbar.make(view,msg,
-                Snackbar.LENGTH_LONG).setAction("Undo"){
-                onUndo()
-                toast(context,"Deleted note is recovered")
-            }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>(){
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    if(event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT){
-                        onTimeout()
-                        toast(context,context.resources.getString(confirmationMsg))
-                    }
-                }
-            }).show()
         }
     }
 }

@@ -113,7 +113,7 @@ class FileUtil {
                 return try {
                     Log.d(TAG, "app file directory = $appFileDirectory")
                     resolver.openOutputStream(appFileDirectory.toUri(), "w").use { os ->
-                        bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, os)
+                        bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, os!!)
                     }
                     appFileDirectory.toURI().toString()
                 } catch (e: FileNotFoundException) {

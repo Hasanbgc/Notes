@@ -1,9 +1,10 @@
 package com.example.tempnavigation.models
 
 import com.example.tempnavigation.repositories.room.entity.NoteEntity
+import java.util.UUID
 
 data class NoteModel(
-    val id:Long,
+    val id: String,
     var title:String,
     var description:String,
     var locationLat:Double,
@@ -26,7 +27,8 @@ data class NoteModel(
         favourite = favourite,
         archive = archive
         )
-    fun isEmpty() = (id == 0L &&
+    fun isEmpty() = (
+            id=="" &&
             title == "" &&
             description == "" &&
             locationLat == 0.0 &&
@@ -56,6 +58,18 @@ data class NoteModel(
         return true
     }
 
-    companion object{
-    fun emptyNote() = NoteModel(0L,"","",0.0,0.0,"","",0L,false,false)}
+    companion object {
+        fun emptyNote() = NoteModel(
+            id ="",
+            title = "",
+            description = "",
+            locationLat = 0.0,
+            locationLong = 0.0,
+            imageUri = "",
+            alarmTime = "",
+            savedTime = 0L,
+            favourite = false,
+            archive = false,
+        )
+    }
 }

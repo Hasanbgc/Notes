@@ -27,5 +27,6 @@
     <string name="staggered">staggered</string>
     <string name="delete_undo_msg">note has been deleted. Would you like to undo the delete?</string>
     <string name="delete_confirm_msg">note has been deleted successfully!</string>
+    <string name="floating_action_button">Floating_action_button</string>
 
 </resources>

@@ -18,7 +18,7 @@ class EditNoteFragmentViewModel(application: Application):AndroidViewModel(appli
 
     fun insert(
         noteModel: NoteModel,
-        onSuccess: (id:Long) -> Unit,
+        onSuccess: (id:String) -> Unit,
         onFailed: (message: String) -> Unit
     ) {
         noteRepository.insert(noteModel.toNoteEntity(), onSuccess = {id->
@@ -90,7 +90,7 @@ class EditNoteFragmentViewModel(application: Application):AndroidViewModel(appli
     }
 
 
-    fun getNote(
+    /*fun getNote(
         id: Long,
         onSuccess: (note: NoteEntity) -> Unit,
         onFailed: (message: String) -> Unit
@@ -100,5 +100,5 @@ class EditNoteFragmentViewModel(application: Application):AndroidViewModel(appli
                 onSuccess(note)
             },
             onFailed = { onFailed(it) })
-    }
+    }*/
 }

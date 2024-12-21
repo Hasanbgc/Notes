@@ -5,16 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.tempnavigation.R
-import com.example.tempnavigation.alarms.AlarmReceiver
+import com.example.tempnavigation.receivers.AlarmReceiver
 import com.example.tempnavigation.utilities.Constant
 import com.example.tempnavigation.utilities.LocationManager
-import kotlinx.coroutines.delay
 
 class LocationUpdateWorker(val context:Context, workerParameters: WorkerParameters):CoroutineWorker(context,workerParameters) {
     private val TAG = "LocationUpdateWorker"
@@ -24,7 +20,7 @@ class LocationUpdateWorker(val context:Context, workerParameters: WorkerParamete
 
     override suspend fun doWork(): Result {
         return try {
-
+           // val list = inputData.keyValueMap<>
             locationList = inputData.getStringArray(Constant.KEY_LOCATION_LIST)?.map { locationString ->
                 val parts = locationString.split(",")
                 val latitude = parts[1].toDouble()

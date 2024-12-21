@@ -52,7 +52,7 @@ abstract class SwipeHelper(
     }
 
     private fun recoverSwipedItem() {
-        while (!recoverQueue.isEmpty()) {
+        while (!recoverQueue.isEmpty) {
             val position = recoverQueue.poll() ?: return
             recyclerView.adapter?.notifyItemChanged(position)
 
@@ -84,7 +84,7 @@ abstract class SwipeHelper(
     override fun onChildDraw(
         c: Canvas,
         recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
+        viewHolder: ViewHolder,
         dX: Float,
         dY: Float,
         actionState: Int,
@@ -125,13 +125,13 @@ abstract class SwipeHelper(
 
     override fun onMove(
         recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
+        viewHolder: ViewHolder,
+        target: ViewHolder
     ): Boolean {
         return false
     }
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+    override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
         val position = viewHolder.adapterPosition
         if (swipedPosition != position) recoverQueue.add(swipedPosition)
         swipedPosition = position

@@ -117,7 +117,7 @@ class HomeFragmentViewModel(application: Application,private val savedStateHandl
     }
 
     fun getNote(
-        id: Long,
+        id: String,
         onSuccess: (note: NoteEntity) -> Unit,
         onFailed: (message: String) -> Unit
     ) {

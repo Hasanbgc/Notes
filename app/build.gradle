@@ -1,15 +1,17 @@
-
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'dagger.hilt.android.plugin'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 android {
     namespace 'com.example.tempnavigation'
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.example.tempnavigation"
@@ -17,6 +19,12 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -30,43 +38,56 @@ android {
 
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            kotlinOptions.jvmTarget = "1.8"
+        tasks.withType(KotlinCompile).configureEach {
+            kotlinOptions.jvmTarget = "17"
         }
     }
+    kapt{
+        correctErrorTypes = true
+    }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     viewBinding{
         enabled = true
+    }
+    buildFeatures {
+        compose true
+        viewBinding true
+        buildConfig true
+        aidl true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.5.2"
     }
 }
 
 dependencies {
     ext.nav_version = "2.3.5"
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.10"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.20"
     testImplementation "com.google.truth:truth:1.1.4"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
-    implementation("androidx.fragment:fragment-ktx:1.6.1")
-    implementation("androidx.activity:activity-ktx:1.6.1")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
+    implementation("androidx.activity:activity-ktx:1.9.3")
 
     //workManager
-    implementation "androidx.work:work-runtime-ktx:2.7.0"
+    implementation "androidx.work:work-runtime-ktx:2.10.0"
 
     //Androidx lifecycle
     def lifecycle_version = "2.2.0"
@@ -88,7 +109,7 @@ dependencies {
 
     //Google room SQLite database helper
     //SQLite helper
-    def room_version = "2.5.2"
+    def room_version = "2.6.1"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
@@ -106,4 +127,23 @@ dependencies {
     //Glide for image loading
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     kapt 'com.github.bumptech.glide:compiler:4.16.0'
+
+    //hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+
+    //compose ui
+    implementation "androidx.activity:activity-compose:1.9.3"
+    implementation "androidx.compose.ui:ui:1.7.5"
+    implementation "androidx.compose.material:material:1.7.5"
+    implementation "androidx.compose.ui:ui-tooling:1.7.5"
+
+   /* implementation 'com.android.tools.build:gradle:8.1.4'
+    implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"*/
+    //ViewBinding
+    implementation 'com.wada811.viewbindingktx:viewbindingktx:4.0.0'
+
+    //gson
+    implementation 'com.google.code.gson:gson:2.11.0'
+
 }

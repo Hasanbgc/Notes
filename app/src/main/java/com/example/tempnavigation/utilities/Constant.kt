@@ -14,5 +14,8 @@ class Constant {
         const val CHANNEL_ID = "AlarmNotificationChannel"
         const val CHANNEL_NAME = "ALARM NOTIFICATION CHANNEL"
         const val KEY_LOCATION_LIST = "Location List"
+
+        const val ALARM_ACTION = "ALARM_SCHEDULER_ACTION"
+        const val LOCATION_ACTION = "LOCATION_UPDATE_ACTION"
     }
 }

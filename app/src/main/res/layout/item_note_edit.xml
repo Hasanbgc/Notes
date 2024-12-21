@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editTextMeetingPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/editTextBackground"
+        android:singleLine="true"
+        android:textCursorDrawable="@color/black"
+        android:cursorVisible="true"
+        android:hint="Meeting Points"
+        android:imeOptions="actionDone"
+        android:minLines="1"
+        android:scrollbars="vertical"
+        android:textColor="?android:attr/textColorPrimary" />
+
+
+</LinearLayout>

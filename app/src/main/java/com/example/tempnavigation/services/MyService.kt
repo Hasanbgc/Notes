@@ -61,7 +61,7 @@ class MyService: Service() {
         return START_STICKY
     }
     private fun initValue(){
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     }
     private fun generateRandomNumber(){
         val coroutine = CoroutineScope(Dispatchers.Main)

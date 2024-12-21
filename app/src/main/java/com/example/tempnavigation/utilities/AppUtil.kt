@@ -2,6 +2,4 @@ package com.example.tempnavigation.utilities
 
 
 
-class AppUtil {
-
-}
+class AppUtil

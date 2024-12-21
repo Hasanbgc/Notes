@@ -23,8 +23,8 @@ class SwipeToDeleteCallback(private val context: Context, private val adapter: N
     private val swipeLimit = 1f / 6f
     override fun onMove(
         recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
+        viewHolder: ViewHolder,
+        target: ViewHolder
     ): Boolean {
         return false
     }
@@ -32,7 +32,7 @@ class SwipeToDeleteCallback(private val context: Context, private val adapter: N
     override fun getSwipeThreshold(viewHolder: ViewHolder): Float {
         return swipeLimit
     }
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+    override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
         val pos = viewHolder.adapterPosition
         val itemView = viewHolder.itemView
         val translateX = abs(itemView.translationX)
@@ -49,7 +49,7 @@ class SwipeToDeleteCallback(private val context: Context, private val adapter: N
     override fun onChildDraw(
         c: Canvas,
         recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
+        viewHolder: ViewHolder,
         dX: Float,
         dY: Float,
         actionState: Int,
@@ -94,12 +94,12 @@ class SwipeToDeleteCallback(private val context: Context, private val adapter: N
 //        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
 //    }
 
-    private fun revealButton(viewHolder:RecyclerView.ViewHolder,pos:Int){
+    private fun revealButton(viewHolder: ViewHolder, pos:Int){
         if(viewHolder.adapterPosition == pos){
         viewHolder.itemView.findViewById<AppCompatImageButton>(R.id.reveal_delete_button).visibility = View.VISIBLE}
 
     }
-    private fun hideButton(viewHolder:RecyclerView.ViewHolder,pos: Int){
+    private fun hideButton(viewHolder: ViewHolder, pos: Int){
         viewHolder.itemView.findViewById<AppCompatImageButton>(R.id.reveal_delete_button).visibility = View.GONE
         viewHolder.itemView.translationX = 0f
     }

@@ -11,7 +11,10 @@
     android:fitsSystemWindows="true"
     >
 
-    <include layout="@layout/content_main"/>
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/content_main"/>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/drawer_nav_view"

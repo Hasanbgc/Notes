@@ -7,6 +7,8 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.example.tempnavigation.models.AlarmData
+import com.example.tempnavigation.receivers.AlarmReceiver
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -19,7 +21,7 @@ class AlarmSchedulersImplementation(val context: Context) : AlarmSchedulers {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun schedule(alarmData: AlarmData) {
-        val intent = Intent(context,AlarmReceiver::class.java).apply {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = "ALARM_SCHEDULER_ACTION"
             putExtra("TITLE",alarmData.title)
             putExtra("EXTRA_MESSAGE", alarmData.message)
@@ -45,7 +47,7 @@ class AlarmSchedulersImplementation(val context: Context) : AlarmSchedulers {
 
 
     override fun cancel(alarmData: AlarmData) {
-        val intent = Intent(context,AlarmReceiver::class.java)
+        val intent = Intent(context, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(context,alarmData.hashCode(),intent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         alarmManager.cancel(pendingIntent)
     }

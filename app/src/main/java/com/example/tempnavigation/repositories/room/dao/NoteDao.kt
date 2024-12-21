@@ -16,21 +16,21 @@ import com.example.tempnavigation.repositories.room.entity.NoteEntity
 @Dao
 interface NoteDao {
     @Insert
-    suspend fun insert(noteEntity: NoteEntity):Long
+    suspend fun insert(noteEntity: NoteEntity)
     @Delete
-    suspend fun delete(noteEntity: NoteEntity){
-        Log.d("DAO","note Entity = $noteEntity")
-    }
+    suspend fun delete(noteEntity: NoteEntity)
     @Update
     suspend fun update(noteEntity: NoteEntity)
 
-    @Query("DELETE FROM ${Constant.TABLE_NOTE}")
-    suspend fun deleteAllNotes()
+    /*@Query("DELETE FROM ${Constant.TABLE_NOTE}")
+    suspend fun deleteAllNotes(): Boolean*/
 
     @Query("DELETE FROM ${Constant.TABLE_NOTE} WHERE id=:id")
-    suspend fun deleteByID(id:Long)
+    suspend fun deleteByID(id:String):Int
+
     @Query("SELECT * FROM ${Constant.TABLE_NOTE} WHERE id=:id LIMIT  1")
-    fun getNote(id:Long):NoteEntity
+    fun getNote(id: String):NoteEntity
+
     @Query("SELECT * FROM ${Constant.TABLE_NOTE} WHERE id=:title LIMIT  1")
     fun getNoteByTitle(title:String):NoteEntity
 

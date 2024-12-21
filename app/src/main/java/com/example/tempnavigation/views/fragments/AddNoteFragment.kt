@@ -13,7 +13,6 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.InputType
-import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -23,7 +22,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextClock
@@ -32,7 +30,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -41,12 +38,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.tempnavigation.R
-import com.example.tempnavigation.alarms.AlarmData
+import com.example.tempnavigation.models.AlarmData
 import com.example.tempnavigation.alarms.AlarmSchedulersImplementation
 import com.example.tempnavigation.databinding.BottomSheetBinding
 import com.example.tempnavigation.databinding.FragmentAddNoteBinding
+import com.example.tempnavigation.helpers.GeoFancingManger
 import com.example.tempnavigation.models.NoteModel
-import com.example.tempnavigation.utilities.Constant
+import com.example.tempnavigation.repositories.room.entity.NoteEntity
 import com.example.tempnavigation.utilities.DateUtil
 import com.example.tempnavigation.utilities.DialogUtils
 import com.example.tempnavigation.utilities.Dialogs
@@ -63,27 +61,25 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-
-class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils(),
-    OnMapReadyCallback {
+@AndroidEntryPoint
+class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils(), OnMapReadyCallback {
 
     //region variable
     private var TAG = "AddNoteFragment"
     private val mainViewModel: MainViewModel by activityViewModels()
     private val addNoteFragmentViewModel: AddNoteFragmentViewModel by viewModels()
     private lateinit var permissionUtils: PermissionUtils
+    @Inject lateinit var geoFancingManger: GeoFancingManger
 
     private var rootView: View? = null
     private lateinit var editTextTitle: EditText
@@ -116,7 +112,7 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     private lateinit var description: String
     private lateinit var alarmTime: String
     private var savedTime: Long = 0
-    private var id: Long = 0
+    private var id: String = ""
     private var favourite = false
     private var archive = false
 
@@ -161,8 +157,8 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
         setInitValue()
         observeLiveData()
         //setAddMenuVisibility()
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+        mapView.onCreate(savedInstanceState)
+        mapView.getMapAsync(this)
 
         return rootView
     }
@@ -175,35 +171,6 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
 
     }
 
-    /*private fun initView(){
-        editTextTitle = rootView?.findViewById(R.id.editText_title)!!
-        editTextDescription = rootView!!.findViewById(R.id.editText_description)
-        upButton = rootView!!.findViewById(R.id.image_view_up)
-        imageView = rootView!!.findViewById(R.id.image_view)
-        discardButton = rootView!!.findViewById(R.id.button_discard)
-        imageHolder = rootView!!.findViewById(R.id.image_holder)
-        mapView = rootView!!.findViewById(R.id.map_view_addNote)
-
-        mapHolder = rootView!!.findViewById(R.id.map_holder)
-        discardButtonMap = rootView!!.findViewById(R.id.button_discard_map)
-
-        discardButton.setOnClickListener(this)
-        discardButtonMap.setOnClickListener(this)
-        upButton.setOnClickListener(this)
-
-        clockDialog = layoutInflater.inflate(R.layout.timer_bottom_sheet,null)
-        dialogs = layoutInflater.inflate(R.layout.bottom_sheet,null)
-        bottomSheet = BottomSheetDialog(requireContext())
-        bottomSheet.setContentView(dialogs)
-        locationOfBottomSheet = dialogs.findViewById(R.id.location)
-        timePickerOfBottomSheet = dialogs.findViewById(R.id.reminder)
-        imagePickerOfBottomSheet = dialogs.findViewById(R.id.image)
-        cameraOfBottomSheet = dialogs.findViewById(R.id.camera)
-        locationOfBottomSheet.setOnClickListener(this)
-        timePickerOfBottomSheet.setOnClickListener(this)
-        imagePickerOfBottomSheet.setOnClickListener(this)
-        cameraOfBottomSheet.setOnClickListener(this)
-    }*/
     private fun initView() {
         editTextTitle = bindingAddNoteFragment?.editTextTitle!!
         editTextTitle.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
@@ -241,7 +208,7 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun observeLiveData() {
-        val text = editTextTitle.text.toString()
+        editTextTitle.text.toString()
         mainViewModel.selectedNote.observe(viewLifecycleOwner, Observer { noteModel ->
             Log.d(TAG, "observeLiveData: $noteModel")
             addNoteFragmentViewModel.setCurrentNote(noteModel)
@@ -351,14 +318,21 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
 
     fun performNoteSave() {
         if (validateNote()) {
-            Log.d(TAG, "performNoteSave: note has been validate = ${validateNote()}")
-            val note = addNoteFragmentViewModel.getCurrentNote()
-            Log.d(TAG, "current Note:$note ")
-            if (note.id == 0L) {
-                Log.d(TAG, "insert note: true ")
+            val note = NoteModel(
+                addNoteFragmentViewModel.getCurrentNote().id,
+                title,
+                description,
+                location.first,
+                location.second,
+                imageUri,
+                timeInLocal,
+                DateUtil.getCurrentTime(),
+                favourite,
+                archive
+            )
+            if(addNoteFragmentViewModel.getCurrentNote().savedTime<=0L) {
                 insertNote(note)
-            } else {
-                Log.d(TAG, "update note: true ")
+            }else{
                 updateNote(note)
             }
         } else {
@@ -367,43 +341,26 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun validateNote(): Boolean {
-        val id = addNoteFragmentViewModel.getCurrentNote().id
-        Log.d(TAG, "validateNote: id = $id")
-        val title = editTextTitle.text?.trim().toString()
-        val description = editTextDescription.text?.trim().toString()
-        val imgUri = addNoteFragmentViewModel.getImageUri()
-        val location = location
-        val alarmTime = timeInLocal
-        val currentTime = DateUtil.getCurrentTime()
+        title = editTextTitle.text.toString().trim()
+        description = editTextDescription.text.toString().trim()
+        imageUri = addNoteFragmentViewModel.getImageUri()
+
+        // Check if the note has any content
+        val hasContent = title.isNotEmpty() ||
+                description.isNotEmpty() ||
+                imageUri.isNotEmpty() ||
+                location != Pair(0.0, 0.0) ||
+                timeInLocal.isNotEmpty()
+
+        if (!hasContent) return false
 
 
-        if (alarmTime != "") {
+        // Schedule alarm if alarm time is set
+        if (timeInLocal.isNotEmpty()) {
             alarmOn(title, description)
         }
 
-        if (title.isEmpty() &&
-            description.isEmpty() &&
-            imgUri.isEmpty() &&
-            location == Pair(0.0,0.0) &&
-            alarmTime.isEmpty()
-        ) {
-            return false
-        } else {
-            //menuItem.findItem(R.id.save).isEnabled = true
-            addNoteFragmentViewModel.setCurrentNote(NoteModel(
-                id,
-                title,
-                description,
-                location.first,
-                location.second,
-                imgUri,
-                alarmTime,
-                currentTime,
-                favourite,
-                archive
-            ))
-            return true
-        }
+        return true
     }
 
     private fun updateNote(currentNote: NoteModel) {
@@ -418,13 +375,10 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun insertNote(note: NoteModel) {
-        addNoteFragmentViewModel.insert(note, onSuccess = {id->
-            Log.d(TAG, "id from db: $id")
-            addNoteFragmentViewModel.updateCurrentNoteUsingNewID(id)
-            Handler(Looper.getMainLooper()).post {
-                Toast.makeText(requireContext(), "note Saved", Toast.LENGTH_SHORT).show()
+        addNoteFragmentViewModel.insert(note, onSuccess = {msg->
+            requireActivity().runOnUiThread {
+                updateUI(msg)
             }
-            saved = true
         }, onFailed = {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
@@ -548,8 +502,8 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
             .build()
         mTimePicker.show(fragmentManger, "AddNoteFragment")
         mTimePicker.addOnPositiveButtonClickListener(View.OnClickListener {
-            val am_pm = if (mTimePicker.hour >= 12) "PM" else "AM"
-            val hr = if (mTimePicker.hour > 12) mTimePicker.hour - 12 else mTimePicker.hour
+            if (mTimePicker.hour >= 12) "PM" else "AM"
+            if (mTimePicker.hour > 12) mTimePicker.hour - 12 else mTimePicker.hour
             timeInLocal = convertToLocalizedTime(mTimePicker.hour, mTimePicker.minute)
             //alarmSchedulersImplementation.schedule(AlarmData(timeInLocal,"fire this alarm"))
             mTimePicker.dismiss()
@@ -773,7 +727,7 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
 
     //endregion
     override fun onMapReady(map: GoogleMap) {
-        var lat = 0.0;
+        var lat = 0.0
         var long = 0.0
         googleMap = map
         mainViewModel.selectedLocation.observe(viewLifecycleOwner, Observer { location ->
@@ -840,8 +794,8 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
         }
     }
 
-    fun updateMapVisibility() {
-
+    fun updateUI(msg:String){
+        DialogUtils.toast(requireContext(),msg)
     }
 
 }

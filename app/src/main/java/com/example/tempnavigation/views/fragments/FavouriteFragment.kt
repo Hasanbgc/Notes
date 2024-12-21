@@ -43,11 +43,14 @@ class FavouriteFragment : Fragment() {
     private fun setInitValue(){
         mainViewModel.showBottomNav.value = true
         mainViewModel.title.value = "Favourite"
-        adapter  = NoteViewAdapter(requireContext(),addNoteFragmentViewModel){note->
+        adapter  = NoteViewAdapter(requireContext(),addNoteFragmentViewModel)
+
+        adapter.onItemClick = {note->
             mainViewModel.selectedNote.value = note
             addNoteFragmentViewModel.setCurrentNote(note)
             mainViewModel.navigationPage.value = NavigationPage.ADD_NOTE
         }
+
         bindingFavouriteFragment.favRecyclerView.adapter = adapter
     }
     fun observeLiveData(){

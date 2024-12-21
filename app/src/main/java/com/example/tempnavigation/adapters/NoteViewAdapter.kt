@@ -7,27 +7,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.ListAdapter
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.tempnavigation.R
 import com.example.tempnavigation.models.NoteModel
+import com.example.tempnavigation.models.ToDoItemModel
 import com.example.tempnavigation.utilities.FileUtil
 import com.example.tempnavigation.viewmodels.AddNoteFragmentViewModel
 import com.example.tempnavigation.viewmodels.MainViewModel
 
 
-class NoteViewAdapter(private val context: Context,val viewModel: AddNoteFragmentViewModel, private val onItemClick: (NoteModel) -> Unit) :
-    RecyclerView.Adapter<NoteViewAdapter.NoteHolder>() {
+
+class NoteViewAdapter(
+    private val context: Context,
+    private val viewModel: AddNoteFragmentViewModel):
+    androidx.recyclerview.widget.ListAdapter<NoteModel, NoteViewAdapter.NoteHolder>(noteDiffCallBack()) {
+
+    var onItemClick: ((NoteModel) -> Unit)? = null
     var mNoteList: MutableList<NoteModel> = mutableListOf()
     private val TAG = "NoteViewAdapter"
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.note_item_with_image, parent, false)
+        return NoteHolder(itemView)
+    }
 
-    inner class NoteHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class NoteHolder(val note: View) : RecyclerView.ViewHolder(note) {
+
         fun bind(noteModel: NoteModel, position: Int, isSelectedItem: Boolean) {
             val textViewTitle: TextView = itemView.findViewById(R.id.mtextViewItemTitle)
             val textViewDescription: TextView = itemView.findViewById(R.id.mtextViewItemDescription)
@@ -62,6 +75,7 @@ class NoteViewAdapter(private val context: Context,val viewModel: AddNoteFragmen
             }else{
                 selectView?.visibility = View.GONE
             }
+
             selectView?.setOnClickListener {
 
                 if (longPressed) {
@@ -88,22 +102,50 @@ class NoteViewAdapter(private val context: Context,val viewModel: AddNoteFragmen
                 viewModel.update(noteModel,{},{})
                 notifyItemChanged(position)
             }
+            note.setOnLongClickListener {
+                longPressed = true
+                selectedItems.clear()
+                selectedItems.add(position)
+                notifyItemChanged(position)
+                true
+            }
+            itemView.setOnClickListener {
+                if (longPressed) {
+                    if (selectedItems.contains(position)) {
+                        selectedItems.remove(position)
+                    } else {
+                        selectedItems.add(position)
+                    }
+                    notifyItemChanged(position)
+                } else {
+                    onItemClick?.invoke(
+                        NoteModel(
+                            noteModel.id,
+                            noteModel.title,
+                            noteModel.description,
+                            noteModel.locationLat,
+                            noteModel.locationLong,
+                            noteModel.imageUri,
+                            noteModel.alarmTime,
+                            noteModel.savedTime,
+                            noteModel.favourite,
+                            noteModel.archive
+                        )
+                    )
+                }
+            }
 
             selectView?.isChecked = isSelectedItem
-
 
         }
 
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.note_item_with_image, parent, false)
-        return NoteHolder(itemView)
-    }
 
-//    override fun getItemViewType(position: Int): Int {
-//        return if (mNoteList[position].imageUri.isNotEmpty()) WITHIMAGE else WITHOUTIMAGE
-//    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (mNoteList[position].imageUri.isNotEmpty()) WITHIMAGE else WITHOUTIMAGE
+    }
 
     override fun getItemCount(): Int {
         return mNoteList.size
@@ -114,45 +156,21 @@ class NoteViewAdapter(private val context: Context,val viewModel: AddNoteFragmen
         Log.d(TAG,"$functionName")
         this.mNoteList = noteList as MutableList<NoteModel>
         Log.d(TAG,"$noteList")
-        notifyDataSetChanged()
+        submitList(noteList)
     }
 
     override fun onBindViewHolder(holder: NoteHolder, position: Int) {
         val currentNote = mNoteList[position]
         holder.bind(currentNote, position, selectedItems.contains(position))
 
-        holder.itemView.setOnClickListener {
-            if (longPressed) {
-                if (selectedItems.contains(position)) {
-                    selectedItems.remove(position)
-                } else {
-                    selectedItems.add(position)
-                }
-                notifyItemChanged(position)
-            } else {
-                onItemClick(
-                    NoteModel(
-                        currentNote.id,
-                        currentNote.title,
-                        currentNote.description,
-                        currentNote.locationLat,
-                        currentNote.locationLong,
-                        currentNote.imageUri,
-                        currentNote.alarmTime,
-                        currentNote.savedTime,
-                        currentNote.favourite,
-                        currentNote.archive
-                    )
-                )
-            }
-        }
+        /*holder.
         holder.itemView.setOnLongClickListener {
             longPressed = true
             selectedItems.clear()
             selectedItems.add(position)
-            notifyDataSetChanged()
+            notifyItemChanged(position)
             true
-        }
+        }*/
     }
 
     fun deleteNoteItem(pos: Int) {
@@ -167,7 +185,7 @@ class NoteViewAdapter(private val context: Context,val viewModel: AddNoteFragmen
         }
 
 
-        notifyDataSetChanged()
+        notifyItemRemoved(pos)
     }
 
     companion object {
@@ -175,5 +193,21 @@ class NoteViewAdapter(private val context: Context,val viewModel: AddNoteFragmen
         const val WITHOUTIMAGE = 2
         var longPressed = false
         var selectedItems = mutableSetOf<Int>()
+    }
+    class noteDiffCallBack: DiffUtil.ItemCallback<NoteModel>(){
+        override fun areItemsTheSame(
+            oldItem: NoteModel,
+            newItem: NoteModel
+        ): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(
+            oldItem: NoteModel,
+            newItem: NoteModel
+        ): Boolean {
+            return oldItem == newItem
+        }
+
     }
 }

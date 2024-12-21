@@ -1,5 +1,6 @@
 package com.example.tempnavigation.views.fragments
 
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -33,6 +34,7 @@ import com.example.tempnavigation.helpers.SwipeHelper
 import com.example.tempnavigation.listener.RecyclerItemLongPressListener
 import com.example.tempnavigation.models.NoteModel
 import com.example.tempnavigation.utilities.DialogUtils
+import com.example.tempnavigation.utilities.Dialogs
 import com.example.tempnavigation.utilities.enums.NavigationPage
 import com.example.tempnavigation.viewmodels.AddNoteFragmentViewModel
 import com.example.tempnavigation.viewmodels.HomeFragmentViewModel
@@ -40,7 +42,7 @@ import com.example.tempnavigation.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
 
-class HomeFragment : Fragment(),View.OnClickListener {
+class HomeFragment : Fragment(),View.OnClickListener ,Dialogs by DialogUtils(){
     private val TAG = "HomeFrag"
     private val homeFragmentViewModel: HomeFragmentViewModel by viewModels()
     private val addNoteFragmentViewModel:AddNoteFragmentViewModel by viewModels()
@@ -64,7 +66,7 @@ class HomeFragment : Fragment(),View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         bindingHomeFragment = FragmentHomeBinding.inflate(inflater, container, false)
-        rootView = bindingHomeFragment.root
+        rootView = bindingHomeFragment.root as View?
         setHasOptionsMenu(true)
         initView()
         setInitValue()
@@ -90,12 +92,15 @@ class HomeFragment : Fragment(),View.OnClickListener {
     private fun setInitValue(){
         mainViewModel.showBottomNav.value = true
         mainViewModel.title.value = "Home"
-        adapter = NoteViewAdapter(requireContext(),addNoteFragmentViewModel){note->
-            mainViewModel.selectedNote.value = note
-            addNoteFragmentViewModel.setCurrentNote(note)
+        adapter = NoteViewAdapter(requireContext(),addNoteFragmentViewModel)
+        bindingHomeFragment.recyclerView.adapter = adapter
+
+        adapter.onItemClick = { it ->
+            mainViewModel.selectedNote.postValue(it)
+            addNoteFragmentViewModel.setCurrentNote(it)
             mainViewModel.navigationPage.value = NavigationPage.ADD_NOTE
         }
-        bindingHomeFragment.recyclerView.adapter = adapter
+
 
         val itemTouchHelper = ItemTouchHelper(object : SwipeHelper(bindingHomeFragment.recyclerView){
             override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
@@ -106,7 +111,7 @@ class HomeFragment : Fragment(),View.OnClickListener {
                     override fun onClick() {
 
                         deleteNoteFromList(position)
-                        DialogUtils.showSnackBarWithActionButton(
+                        showSnackBarWithActionButton(
                             requireContext(),
                             requireView(),
                             R.string.delete_undo_msg,
@@ -176,7 +181,7 @@ class HomeFragment : Fragment(),View.OnClickListener {
 
             for (i in it.indices ){
 
-                val note = NoteModel(it[i].id!!,it[i].title,it[i].description,it[i].locationLat,it[i].locationLong,it[i].imgUri,it[i].alarmTime,it[i].savedTime,it[i].favourite,it[i].archive)
+                val note = NoteModel(it[i].id.toString(),it[i].title,it[i].description,it[i].locationLat,it[i].locationLong,it[i].imgUri,it[i].alarmTime,it[i].savedTime,it[i].favourite,it[i].archive)
                 noteList.add(note)
             }
 
@@ -194,7 +199,7 @@ class HomeFragment : Fragment(),View.OnClickListener {
 
 
     private fun updateAdapter(noteList: MutableList<NoteModel>){
-        adapter?.setNote(noteList)
+        adapter.setNote(noteList)
     }
     private fun updateData(name:String){
         val list = MutableLiveData<List<NoteModel>>()

@@ -5,11 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.tempnavigation.models.NoteModel
 import com.example.tempnavigation.utilities.Constant
+import java.util.UUID
 
 @Entity(tableName = Constant.TABLE_NOTE)
 data class NoteEntity(
-    @PrimaryKey(autoGenerate = true)
-    var id:Long,
+    @PrimaryKey()
+    var id: String = UUID.randomUUID().toString(),
     @ColumnInfo(name = "title")
     var title:String,
     @ColumnInfo(name = "description")
@@ -28,6 +29,32 @@ data class NoteEntity(
     var favourite:Boolean,
     @ColumnInfo(name = "archive")
     var archive:Boolean,
-){
-    fun toNoteModel() = NoteModel(id,title,description,locationLat,locationLong,imgUri,alarmTime,savedTime,favourite,archive)
+) {
+    fun toNoteModel() = NoteModel(
+        id.toString(),
+        title,
+        description,
+        locationLat,
+        locationLong,
+        imgUri,
+        alarmTime,
+        savedTime,
+        favourite,
+        archive
+    )
+
+    companion object {
+        fun emptyNoteEntity() = NoteEntity(
+            id = "",
+            title = "",
+            description = "",
+            locationLat = 0.0,
+            locationLong = 0.0,
+            imgUri = "",
+            alarmTime = "",
+            savedTime = 0L,
+            favourite = false,
+            archive = false
+        )
+    }
 }

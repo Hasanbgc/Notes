@@ -5,23 +5,32 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Looper
+import android.util.Log
 
 class AlarmMediaPlayer(private val context:Context) {
     private val mediaPlayer = MediaPlayer()
-    private val handler = android.os.Handler(Looper.getMainLooper())
+    //private val handler = android.os.Handler(Looper.getMainLooper())
+
+    private enum class PlayerState { IDLE, PREPARED, PLAYING, STOPPED, RELEASED }
+    private var playerState = PlayerState.IDLE
 
     fun prepareMediaPlayer(rawResourceId:Int,packageName:String){
         mediaPlayer.apply {
             reset()
             setDataSource(context, getSoundUri(rawResourceId, packageName))
             setOnPreparedListener{mp ->
+                playerState = PlayerState.PREPARED
                 mp.start()
+                playerState = PlayerState.PLAYING
             }
             setOnErrorListener{mp,what,extra ->
-                false
+                Log.e("AlarmMediaPlayer", "MediaPlayer Error: what=$what extra=$extra")
+                releaseMediaPlayer()
+                true
             }
             setAudioAttributes(createAudioAttributes())
             prepareAsync()
+            playerState = PlayerState.PREPARED
         }
     }
     private fun getSoundUri(rawResourceId:Int,packageName:String): Uri {
@@ -34,15 +43,22 @@ class AlarmMediaPlayer(private val context:Context) {
             .build()
     }
     fun startMediaPlayer() {
-        mediaPlayer.start()
+        if(playerState == PlayerState.PREPARED || playerState ==  PlayerState.STOPPED) {
+            mediaPlayer.start()
+            playerState = PlayerState.PLAYING
+        }
     }
 
     fun stopMediaPlayer() {
-        mediaPlayer.stop()
+        if (playerState == PlayerState.PLAYING) {
+            mediaPlayer.stop()
+            playerState = PlayerState.STOPPED
+        }
     }
 
     fun releaseMediaPlayer() {
         mediaPlayer.release()
+        playerState = PlayerState.RELEASED
     }
 
     fun setOnCompletionListener(listener: MediaPlayer.OnCompletionListener) {
@@ -86,11 +102,7 @@ class AlarmMediaPlayer(private val context:Context) {
         mediaPlayer.setOnErrorListener(listener)
     }
 
-    fun postDelayed(delayMillis: Long, action: () -> Unit) {
+    /*fun postDelayed(delayMillis: Long, action: () -> Unit) {
         handler.postDelayed(action, delayMillis)
-    }
-
-    fun removeCallbacks(action: () -> Unit) {
-        handler.removeCallbacksAndMessages(null)
-    }
+    }*/
 }

@@ -34,11 +34,11 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
     }
     fun getImageUri() = imageUri
     fun insert(
-        noteModel:NoteModel,
-        onSuccess: (id:Long) -> Unit,
+        note:NoteModel,
+        onSuccess: (id: String) -> Unit,
         onFailed: (message: String) -> Unit
     ) {
-        val noteEntity =noteModel.toNoteEntity()//NoteEntity(note.id,note.title,note.description,note.priority,note.imageUri)
+        val noteEntity =NoteEntity(title = note.title, description = note.description, locationLat = note.locationLat, locationLong = note.locationLong, imgUri = note.imageUri, alarmTime = note.alarmTime, savedTime = note.savedTime, favourite = note.favourite, archive = note.archive)
         noteRepository.insert(noteEntity, onSuccess = {id->
             onSuccess(id)
         }, onFailed = {
@@ -51,7 +51,13 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
         onSuccessUpdate: (updateStatus:Boolean) -> Unit,
         onFailedUpdate: (message: String) -> Unit
     ) {
-        noteRepository.getNoteById(noteModel.id,
+        noteRepository.update(noteModel.toNoteEntity(), onSuccess = {status->
+            onSuccessUpdate(status)
+        }, onFailed = {
+            onFailedUpdate(it)
+        })
+
+        /*noteRepository.getNoteById(noteModel.id,
             onSuccess = { noteEntity ->
                 noteEntity.title = noteModel.title
                 noteEntity.description = noteModel.description
@@ -70,7 +76,7 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
                     })
             }, onFailed = {
                 onFailedUpdate(it)
-            })
+            })*/
 
     }
 
@@ -111,7 +117,7 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
 
 
     fun getNote(
-        id: Long,
+        id: String,
         onSuccess: (note: NoteEntity) -> Unit,
         onFailed: (message: String) -> Unit
     ) {
@@ -133,7 +139,7 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
             onFailed = { onFailed(it) })
     }
 
-    fun updateCurrentNoteUsingNewID(id:Long){
+    fun updateCurrentNoteUsingNewID(id: String){
         getNote(id,{ noteEntity ->
             Log.d(TAG, "updateCurrentNoteUsingNewID: noteEntity = $noteEntity ")
                 setCurrentNote(noteEntity.toNoteModel())

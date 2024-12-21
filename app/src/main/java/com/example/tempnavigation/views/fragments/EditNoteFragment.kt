@@ -122,7 +122,6 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
 
     private fun observeLiveData() {
         mainViewModel.selectedNote.observe(viewLifecycleOwner, Observer { noteModel ->
-            id = noteModel.id
             title = noteModel.title
             description = noteModel.description
             imageUri = noteModel.imageUri
@@ -163,7 +162,7 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
 
     private fun delete() {
         hideSoftKeyboard()
-        viewModel.delete(NoteModel(id,title,description,location.first,location.second,imageUri,alarmTime,savedTime,favourite,archive), {
+        viewModel.delete(NoteModel(id.toString(),title,description,location.first,location.second,imageUri,alarmTime,savedTime,favourite,archive), {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(context, "note deleted", Toast.LENGTH_SHORT).show()
                 clear()
@@ -181,7 +180,7 @@ class EditNoteFragment : Fragment(),View.OnClickListener {
         description = editTextDescription.text.trim().toString()
         val updatedTime = DateUtil.getCurrentTime()
 
-        viewModel.update(NoteModel(id,title,description,location.first,location.second,imageUri,alarmTime,updatedTime,favourite,archive), onSuccessUpdate = {
+        viewModel.update(NoteModel(id.toString(),title,description,location.first,location.second,imageUri,alarmTime,updatedTime,favourite,archive), onSuccessUpdate = {
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(requireContext(), "note Updated", Toast.LENGTH_SHORT).show()
             }

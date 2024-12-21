@@ -14,7 +14,7 @@ class LocationCompServiceViewModel (application: Application) : AndroidViewModel
         noteRepository = NoteRepository(noteDb.noteDao())
     }
     fun getNote(
-        id: Long,
+        id: String,
         onSuccess: (note: NoteEntity) -> Unit,
         onFailed: (message: String) -> Unit
     ) {

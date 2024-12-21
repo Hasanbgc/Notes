@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -24,13 +25,18 @@ import android.view.View.OnClickListener
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.work.impl.foreground.SystemForegroundService
 import com.example.tempnavigation.R
 import com.example.tempnavigation.alarms.AlarmMediaPlayer
+import com.example.tempnavigation.receivers.AlarmDismissReceiver
 import com.example.tempnavigation.repositories.NoteRepository
 import com.example.tempnavigation.repositories.room.NoteRoomDatabase
 import com.example.tempnavigation.utilities.Constant
+import com.example.tempnavigation.views.MainActivity
 import com.example.tempnavigation.views.fragments.AlarmDialogFragment
+import com.example.tempnavigation.views.fragments.HomeFragment
 
 class AlarmForegroundService:Service() {
     private val TAG = "AlarmForegroundService"
@@ -56,16 +62,16 @@ class AlarmForegroundService:Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG,"service stared!")
+        Log.d(TAG, "service stared!")
         var title = ""
         var msg = ""
-        var id = 0L
-        if(intent?.action == "ALARM_SCHEDULER_ACTION") {
-            title = intent?.getStringExtra("TITLE").toString()
-            msg = intent?.getStringExtra("EXTRA_MESSAGE").toString()
-        }else{
-            id = intent?.getLongExtra("ID",0)!!
-            if(id!=0L) {
+        var id = ""
+        if (intent?.action == Constant.ALARM_ACTION) {
+            title = intent.getStringExtra("TITLE") ?: "Title"
+            msg = intent.getStringExtra("EXTRA_MESSAGE") ?: "Message"
+        } else {
+            id = intent?.getStringExtra("ID")!!
+            if (id.isNotEmpty()) {
                 noteRepository.getNoteById(id, { noteEntity ->
                     val noteModel = noteEntity.toNoteModel()
                     title = noteModel.title
@@ -73,27 +79,25 @@ class AlarmForegroundService:Service() {
                 }, {})
             }
         }
-        val notification = createNotification(title,msg).also { playAlarm() }
-        startForeground(1,notification)
-        showAlarmDialog(title,msg)
+        val notification = createNotification(title, msg)
+        startForeground(1, notification)
+        alarmMediaPlayer.prepareMediaPlayer(R.raw.alarm, this.packageName)
+        showAlarmDialog(title, msg)
         //stopping service after a timeout
         //Handler(mainLooper).postDelayed({stopSelf()},10000).also { AlarmMediaPlayer(this).stopMediaPlayer() }
         playAlarm()
-        AlarmMediaPlayer(this).setOnCompletionListener{
-            stopSelf()
-        }
         return START_NOT_STICKY
     }
 
     private fun playAlarm() {
-        val alarmMediaPlayer = AlarmMediaPlayer(this)
-        alarmMediaPlayer.prepareMediaPlayer(R.raw.alarm, this.packageName)
-
         alarmMediaPlayer.startMediaPlayer()
+        alarmMediaPlayer.setOnCompletionListener(object : MediaPlayer.OnCompletionListener{
+            override fun onCompletion(mp: MediaPlayer?) {
+                alarmMediaPlayer.releaseMediaPlayer()
+                stopSelf()
+            }
 
-//        alarmMediaPlayer.setOnCompletionListener{
-//            stopSelf()
-//        }
+        })
     }
 
     //this will not work as a system alert Window
@@ -101,12 +105,11 @@ class AlarmForegroundService:Service() {
     @SuppressLint("ClickableViewAccessibility")
     private fun showAlarmDialog(title:String?, message:String?) {
         Log.d(TAG,"showAlarmDialog called")
-        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         // Initialize your custom view for the alarm dialog
         alertDialogView = LayoutInflater.from(applicationContext).inflate(R.layout.note_alert_dialog_layout, null)
 
         // Set up your custom dialog view and its components
-        val alarmMediaPlayer = AlarmMediaPlayer(applicationContext)
         val titleTextView = alertDialogView.findViewById<TextView>(R.id.alertTitle)
         val alertMessage = alertDialogView.findViewById<TextView>(R.id.alertMessage)
         val alertOffButton = alertDialogView.findViewById<TextView>(R.id.alert_off_button)
@@ -159,12 +162,12 @@ class AlarmForegroundService:Service() {
                         stopSelf()
                     } else {
                         val translationX = deltaX.coerceAtMost(viewWidth * 0.30f)
-                        alertDialogView?.translationX = translationX
+                        alertDialogView.translationX = translationX
                     }
                     true
                 }
                 MotionEvent.ACTION_UP ->{
-                    alertDialogView?.animate()?.translationX(0f)?.start()
+                    alertDialogView.animate()?.translationX(0f)?.start()
                     true
                 }else -> {false}
             }
@@ -178,11 +181,17 @@ class AlarmForegroundService:Service() {
     private fun createNotification(title:String?,message:String?): Notification {
         Log.d(TAG,"Notification has crated")
         val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val notification = NotificationCompat.Builder(this, Constant.CHANNEL_ID)
             .setSmallIcon(R.drawable.notification)
             .setContentTitle(title)
             .setContentText(message)
+            .setContentIntent(
+                PendingIntent.getActivity(this,0,
+                    Intent(this, HomeFragment::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(NotificationCompat.Action(0,
                 "Dismiss",
@@ -194,25 +203,18 @@ class AlarmForegroundService:Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        alarmMediaPlayer.stopMediaPlayer()
-        alarmMediaPlayer.releaseMediaPlayer()
+        alarmMediaPlayer.apply {
+            startMediaPlayer()
+            releaseMediaPlayer()
+        }
         windowManager.removeView(alertDialogView)
     }
 
-
-    fun startService(context:Context,title:String?,message:String?){
-        Log.d(TAG,"$context")
-        //contxt = context
-        alarmTitle = title
-        alarmMessage = message
-        val intent = Intent(context,AlarmForegroundService::class.java)
-        ContextCompat.startForegroundService(context,intent)
-    }
 }
-class AlarmDismissReceiver : BroadcastReceiver(){
-    override fun onReceive(context: Context?, intent: Intent?) {
-        val serviceIntent = Intent(context,AlarmForegroundService::class.java)
-        context?.stopService(serviceIntent)
+fun Context.startServiceWithIntent(intent: Intent){
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        this.startForegroundService(intent)  // For API 26+
+    } else {
+        this.startService(intent)  // For API 25 and below
     }
-
 }

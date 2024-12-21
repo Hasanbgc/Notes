@@ -49,7 +49,6 @@ import androidx.work.workDataOf
 import com.example.tempnavigation.R
 import com.example.tempnavigation.alarms.AlarmMediaPlayer
 import com.example.tempnavigation.models.NoteModel
-import com.example.tempnavigation.services.LocationComparatorService
 import com.example.tempnavigation.services.LocationUpdateWorker
 import com.example.tempnavigation.services.MyService
 import com.example.tempnavigation.utilities.Constant
@@ -61,8 +60,10 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by DialogUtils() {
     val TAG = "MainActivity"
     private val viewModel: MainViewModel by viewModels()
@@ -136,6 +137,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
         supportActionBar?.title = ""
         //supportActionBar?.setHomeButtonEnabled(true)
         //supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     }
 
     private fun initNavigation() {
@@ -183,6 +185,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
     private fun initValue() {
         alarmMediaPlayer = AlarmMediaPlayer(this)
         alarmMediaPlayer.prepareMediaPlayer(0, packageName)
+        /*bottomAppBar.fab*/
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -254,21 +257,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
         viewModel.title.observe(this) {
             titleView.text = it
         }
-        viewModel.allNotes.observe(this) { it ->
-            val list = arrayListOf<Pair<Long,Location>>()
-            for (i in it.indices) {
-                val note =it[i].toNoteModel()
-                if(note.locationLat!=0.0 && note.locationLong!=0.0) {
-                    val location = Location("")
-                    location.latitude = note.locationLat
-                    location.longitude = note.locationLong
-                    list.add(Pair(note.id,location))
-
-                }
-            }
-           // startLocationComparatorService(list)
-            //update location list
-            updateLocationList(list)
+        viewModel.allNotes.observe(this) { noteList ->
+            //updateLocationList(noteList.map { it.toNoteModel() })
         }
     }
 
@@ -283,18 +273,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
 
         //LocationComparatorService starts here
 
-    private fun startLocationComparatorService(mList:ArrayList<Int>) {
+    /*private fun startLocationComparatorService(mList:ArrayList<Int>) {
         val locationComparatorIntent = Intent(this, LocationComparatorService::class.java)
         locationComparatorIntent.putExtra("LIST",mList)
         //locationComparatorIntent.putExtra("CONTEXT",this as Parcelable)
         this.startService(locationComparatorIntent)
-    }
+    }*/
 
-    private fun updateLocationList(locationList:ArrayList<Pair<Long,Location>>) {
-        if (locationList.isNotEmpty()) {
-            //val list: List<Pair<Int, Location>> = locationList.toList()
-            val locationList = locationList.map { pairToString(it) }.toTypedArray()
+    private fun updateLocationList(noteList:List<NoteModel>) {
+        if (noteList.isNotEmpty()) {
+            val locationList = noteList.map {
+                val location = Location("").apply { latitude = it.locationLat; longitude = it.locationLong }
+                Pair(it.id,location)
+            }
             Log.d(TAG,"location List = $locationList")
+            val gson = Gson()
             val data = workDataOf(Constant.KEY_LOCATION_LIST to locationList)
             val periodicWorkRequest = PeriodicWorkRequestBuilder<LocationUpdateWorker>(
                 repeatInterval = 3, TimeUnit.SECONDS

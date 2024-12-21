@@ -1,6 +1,4 @@
-package com.example.tempnavigation.alarms
-
-import java.time.LocalDateTime
+package com.example.tempnavigation.models
 
 data class AlarmData(
     val alarmTime:String,

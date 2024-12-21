@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tempnavigation.R
 import com.example.tempnavigation.adapters.NoteViewAdapter
@@ -47,11 +48,15 @@ class ArchiveFragment : Fragment() {
     private fun setInitValue() {
         mainViewModel.showBottomNav.value = true
         mainViewModel.title.value = "Archive"
-        adapter  = NoteViewAdapter(requireContext(),addNoteFragmentViewModel){note->
+        val layoutManager = LinearLayoutManager(requireContext())
+        adapter  = NoteViewAdapter(requireContext(),addNoteFragmentViewModel)
+
+        adapter.onItemClick = {note->
             mainViewModel.selectedNote.value = note
             addNoteFragmentViewModel.setCurrentNote(note)
             mainViewModel.navigationPage.value = NavigationPage.ADD_NOTE
         }
+
         bindingArchiveFragment.favRecyclerView.adapter = adapter
     }
 
