@@ -33,6 +33,7 @@ import com.example.tempnavigation.databinding.FragmentHomeBinding
 import com.example.tempnavigation.helpers.SwipeHelper
 import com.example.tempnavigation.listener.RecyclerItemLongPressListener
 import com.example.tempnavigation.models.NoteModel
+import com.example.tempnavigation.repositories.room.entity.NoteEntity
 import com.example.tempnavigation.utilities.DialogUtils
 import com.example.tempnavigation.utilities.Dialogs
 import com.example.tempnavigation.utilities.enums.NavigationPage
@@ -97,17 +98,26 @@ class HomeFragment : Fragment(),View.OnClickListener ,Dialogs by DialogUtils(){
 
         adapter.onItemClick = { it ->
             mainViewModel.selectedNote.postValue(it)
-            addNoteFragmentViewModel.setCurrentNote(it)
+            //addNoteFragmentViewModel.setCurrentNote(it)
             mainViewModel.navigationPage.value = NavigationPage.ADD_NOTE
         }
 
 
         val itemTouchHelper = ItemTouchHelper(object : SwipeHelper(bindingHomeFragment.recyclerView){
             override fun instantiateUnderlayButton(position: Int): List<UnderlayButton> {
+                if (position < 0 || position >= noteList.size) {
+                    Log.e(TAG, "instantiateUnderlayButton: Invalid position $position")
+                    return emptyList() // Return an empty list if the position is invalid
+                }
                 val buttonList: List<UnderlayButton>
                 val note = noteList[position]
                 Log.e(TAG, "instantiateUnderlayButton: ${noteList[position]},/n pos = $position", )
-                val deleteButton = UnderlayButton(requireContext(),"Delete",14.0f,R.color.colorChartRed,object:UnderlayButtonClickListener{
+                val deleteButton = UnderlayButton(
+                    requireContext(),
+                    "Delete",
+                    14.0f,
+                    R.color.colorChartRed,
+                    object:UnderlayButtonClickListener{
                     override fun onClick() {
 
                         deleteNoteFromList(position)
@@ -166,8 +176,8 @@ class HomeFragment : Fragment(),View.OnClickListener ,Dialogs by DialogUtils(){
         when(v?.id){
             R.id.addButton ->{
                 getPermissionForWindowOverlay()
-                mainViewModel.selectedNote.value = NoteModel.emptyNote()
-                addNoteFragmentViewModel.setCurrentNote(NoteModel.emptyNote())
+                mainViewModel.selectedNote.value = NoteEntity.emptyNoteEntity().toNoteModel()
+                //addNoteFragmentViewModel.setCurrentNote(NoteModel.emptyNote())
                 Toast.makeText(context,"Create An Add Fragment",Toast.LENGTH_SHORT).show()
                 mainViewModel.navigationPage.value = NavigationPage.ADD_NOTE
 
@@ -199,9 +209,9 @@ class HomeFragment : Fragment(),View.OnClickListener ,Dialogs by DialogUtils(){
 
 
     private fun updateAdapter(noteList: MutableList<NoteModel>){
-        adapter.setNote(noteList)
+        adapter.submitList(noteList)
     }
-    private fun updateData(name:String){
+    /*private fun updateData(name:String){
         val list = MutableLiveData<List<NoteModel>>()
         lifecycleScope.launch {
             homeFragmentViewModel.getAllNotes(
@@ -221,7 +231,7 @@ class HomeFragment : Fragment(),View.OnClickListener ,Dialogs by DialogUtils(){
             )
         }
 
-    }
+    }*/
     private fun getPermissionForWindowOverlay():Boolean{
         return if(Settings.canDrawOverlays(context)){
 

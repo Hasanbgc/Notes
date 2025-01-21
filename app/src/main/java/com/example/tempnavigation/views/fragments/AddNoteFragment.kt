@@ -64,6 +64,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.wada811.viewbindingktx.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -72,12 +73,13 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils(), OnMapReadyCallback {
+class AddNoteFragment : Fragment(R.layout.fragment_add_note), View.OnClickListener, Dialogs by DialogUtils(), OnMapReadyCallback {
 
     //region variable
     private var TAG = "AddNoteFragment"
+    private val binding by viewBinding(FragmentAddNoteBinding::bind)
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val addNoteFragmentViewModel: AddNoteFragmentViewModel by viewModels()
+    private val viewModel: AddNoteFragmentViewModel by viewModels()
     private lateinit var permissionUtils: PermissionUtils
     @Inject lateinit var geoFancingManger: GeoFancingManger
 
@@ -139,11 +141,10 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     private var location = Pair(0.0, 0.0)
     private var timeInLocal = ""
     private lateinit var alarmSchedulersImplementation: AlarmSchedulersImplementation
-    private var bindingAddNoteFragment: FragmentAddNoteBinding? = null
     private var bottomSheetBinding: BottomSheetBinding? = null
 
     //endregion
-    override fun onCreateView(
+    /*override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -151,46 +152,50 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
         bindingAddNoteFragment = FragmentAddNoteBinding.inflate(inflater, container, false)
         rootView = bindingAddNoteFragment?.root
         inputMethodManager = activity?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
+
+        return rootView
+    }*/
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        inputMethodManager = activity?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         setHasOptionsMenu(true)
 
         initView()
         setInitValue()
         observeLiveData()
         //setAddMenuVisibility()
-        mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync(this)
+        binding.mapViewAddNote.onCreate(savedInstanceState)
+        binding.mapViewAddNote.getMapAsync(this)
 
-        return rootView
     }
 
     override fun onResume() {
         super.onResume()
         setAddMenuVisibility()
         requireActivity().invalidateOptionsMenu()
-        mapView.onResume()
+        binding.mapViewAddNote.onResume()
 
     }
 
     private fun initView() {
-        editTextTitle = bindingAddNoteFragment?.editTextTitle!!
-        editTextTitle.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        editTextDescription = bindingAddNoteFragment?.editTextDescription!!
-        editTextDescription.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        upButton = bindingAddNoteFragment?.imageViewUp!!
-        imageView = bindingAddNoteFragment?.imageView!!
-        discardButton = bindingAddNoteFragment?.buttonDiscard!!
-        imageHolder = bindingAddNoteFragment?.imageHolder!!
-        mapView = bindingAddNoteFragment?.mapViewAddNote!!
+        binding.apply {
+            editTextTitle.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            editTextDescription.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
 
-        mapHolder = bindingAddNoteFragment?.mapHolder!!
-        discardButtonMap = bindingAddNoteFragment?.buttonDiscardMap!!
+            buttonDiscard.setOnClickListener(this@AddNoteFragment)
+            buttonDiscardMap.setOnClickListener(this@AddNoteFragment)
+            imageViewUp.setOnClickListener(this@AddNoteFragment)
+        }
 
-        discardButton.setOnClickListener(this)
-        discardButtonMap.setOnClickListener(this)
-        upButton.setOnClickListener(this)
+       /* upButton = binding.imageViewUp
+        imageView = binding.imageView
+        discardButton = binding.buttonDiscard
+        imageHolder = binding.imageHolder
+        mapView = binding.mapViewAddNote*/
 
-        //clockDialog = layoutInflater.inflate(R.layout.timer_bottom_sheet,null)
-
+        //mapHolder = binding.mapHolder
         bottomSheet = BottomSheetDialog(requireContext())
         bottomSheetBinding = BottomSheetBinding.inflate(layoutInflater)
 
@@ -208,35 +213,27 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun observeLiveData() {
-        editTextTitle.text.toString()
         mainViewModel.selectedNote.observe(viewLifecycleOwner, Observer { noteModel ->
             Log.d(TAG, "observeLiveData: $noteModel")
-            addNoteFragmentViewModel.setCurrentNote(noteModel)
-            id = noteModel.id
-            title = noteModel.title
-            description = noteModel.description
-            imageUri = noteModel.imageUri
+            viewModel.currentNote = noteModel
+            //id = noteModel.id
+            //title = noteModel.title
+            //description = noteModel.description
+            //imageUri = noteModel.imageUri
             location = Pair(noteModel.locationLat, noteModel.locationLong)
-            alarmTime = noteModel.alarmTime
-            savedTime = noteModel.savedTime
-            favourite = noteModel.favourite
+            Log.d(TAG, "location: $location")
+            //alarmTime = noteModel.alarmTime
+            //savedTime = noteModel.savedTime
+            //favourite = noteModel.favourite
 
-            editTextTitle.setText(title)
-            editTextDescription.setText(description)
+            binding.editTextTitle.setText(noteModel.title)
+            binding.editTextDescription.setText(noteModel.description)
 
-            if (imageUri != "") {
-                imageHolder.visibility = View.VISIBLE
+            if (noteModel.imageUri != "") {
+                binding.imageHolder.visibility = View.VISIBLE
                 Glide.with(this).load(imageUri).into(imageView)
             }
         })
-//       val currentNote =  addNoteFragmentViewModel.getCurrentNote()
-//        Log.d(TAG, "observeLiveData: $currentNote")
-//        editTextTitle.setText(currentNote.title)
-//        editTextDescription.setText(currentNote.description)
-//        if (currentNote.imageUri != "") {
-//            imageHolder.visibility = View.VISIBLE
-//            Glide.with(this).load(imageUri).into(imageView)
-//        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -270,13 +267,13 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun setAddMenuVisibility() {
-        editTextTitle.doAfterTextChanged {
-            menuItem.findItem(R.id.save).isEnabled = editTextTitle.text.isNotEmpty()
-            menuItem.findItem(R.id.delete).isEnabled = editTextTitle.text.isNotEmpty()
+        binding.editTextTitle.doAfterTextChanged {
+            menuItem.findItem(R.id.save).isEnabled = binding.editTextTitle.text.isNotEmpty()
+            menuItem.findItem(R.id.delete).isEnabled = binding.editTextTitle.text.isNotEmpty()
         }
-        editTextDescription.doAfterTextChanged {
-            menuItem.findItem(R.id.save).isEnabled = editTextDescription.text!!.isNotEmpty()
-            menuItem.findItem(R.id.delete).isEnabled = editTextDescription.text!!.isNotEmpty()
+        binding.editTextDescription.doAfterTextChanged {
+            menuItem.findItem(R.id.save).isEnabled = binding.editTextDescription.text!!.isNotEmpty()
+            menuItem.findItem(R.id.delete).isEnabled = binding.editTextDescription.text!!.isNotEmpty()
         }
     }
 
@@ -292,10 +289,10 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun clear() {
-        if (editTextTitle.hasFocus()) {
-            editTextTitle.text.clear()
+        if (binding.editTextTitle.hasFocus()) {
+            binding.editTextTitle.text.clear()
         } else {
-            editTextDescription.text?.clear()
+            binding.editTextDescription.text?.clear()
         }
     }
 
@@ -319,18 +316,18 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     fun performNoteSave() {
         if (validateNote()) {
             val note = NoteModel(
-                addNoteFragmentViewModel.getCurrentNote().id,
-                title,
-                description,
+                viewModel.currentNote.id,
+                binding.editTextTitle.text.toString().trim(),
+                binding.editTextDescription.text.toString().trim(),
                 location.first,
                 location.second,
                 imageUri,
                 timeInLocal,
                 DateUtil.getCurrentTime(),
-                favourite,
-                archive
+                viewModel.currentNote.favourite,
+                viewModel.currentNote.archive
             )
-            if(addNoteFragmentViewModel.getCurrentNote().savedTime<=0L) {
+            if(viewModel.currentNote.savedTime<=0L) {
                 insertNote(note)
             }else{
                 updateNote(note)
@@ -341,15 +338,15 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun validateNote(): Boolean {
-        title = editTextTitle.text.toString().trim()
-        description = editTextDescription.text.toString().trim()
-        imageUri = addNoteFragmentViewModel.getImageUri()
+        title = binding.editTextTitle.text.toString().trim()
+        description = binding.editTextDescription.text.toString().trim()
+        imageUri = viewModel.getImageUri()
 
         // Check if the note has any content
         val hasContent = title.isNotEmpty() ||
                 description.isNotEmpty() ||
                 imageUri.isNotEmpty() ||
-                location != Pair(0.0, 0.0) ||
+                (location.first!=0.0 && location.second!=0.0) ||
                 timeInLocal.isNotEmpty()
 
         if (!hasContent) return false
@@ -365,7 +362,7 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
 
     private fun updateNote(currentNote: NoteModel) {
         Log.d(TAG, "updateNote: $previousTitle")
-        addNoteFragmentViewModel.update(currentNote, {status->
+        viewModel.update(currentNote, {status->
             if(status)
                 Handler(Looper.getMainLooper()).post {
                     DialogUtils.toast(requireContext(), "Note Updated.")
@@ -375,7 +372,7 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     }
 
     private fun insertNote(note: NoteModel) {
-        addNoteFragmentViewModel.insert(note, onSuccess = {msg->
+        viewModel.insert(note, onSuccess = {msg->
             requireActivity().runOnUiThread {
                 updateUI(msg)
             }
@@ -400,7 +397,6 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
 
     override fun onDestroyView() {
         super.onDestroyView()
-        bindingAddNoteFragment = null
     }
 
     override fun onClick(v: View?) {
@@ -453,13 +449,13 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
                 if (uriForCamera != Uri.EMPTY) {
                     deleteTempImage(uriForCamera)
                 }
-                imageView.setImageResource(0)
-                addNoteFragmentViewModel.setImageUri("")
+                binding.imageView.setImageResource(0)
+                viewModel.setImageUri("")
                 updateImageVisibility()
             }
 
             R.id.button_discard_map -> {
-                mapHolder.visibility = View.GONE
+                binding.mapHolder.visibility = View.GONE
             }
 
             R.id.location -> {
@@ -532,9 +528,9 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
             // Callback is invoked after the user selects a media item or closes the
             // photo picker.
             if (uri != null) {
-                imageView.setImageURI(uri)
-                addNoteFragmentViewModel.setImageUri(uri.toString())
-                imageHolder.visibility = View.VISIBLE
+                binding.imageView.setImageURI(uri)
+                viewModel.setImageUri(uri.toString())
+                binding.imageHolder.visibility = View.VISIBLE
                 val imagePath = uri.path
                 Toast.makeText(requireContext(), "image path = $imagePath", Toast.LENGTH_SHORT)
                     .show()
@@ -561,7 +557,7 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
                             bitmap,
                             imageTitle
                         ).toString()
-                    addNoteFragmentViewModel.setImageUri(imageUri)
+                    viewModel.setImageUri(imageUri)
                     updateImageVisibility()
                     Log.d(TAG, imageUri)
                     Toast.makeText(context, imageUri, Toast.LENGTH_LONG).show()
@@ -742,7 +738,7 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationLatLng, 20f))
         if (lat != 0.0 && long != 0.0 && mapVisibility) {
             Log.d(TAG, "init location = $lat,$long")
-            mapHolder.visibility = View.VISIBLE
+            binding.mapHolder.visibility = View.VISIBLE
             updateImageVisibility()
         }
         // Disable marker dragging
@@ -770,27 +766,27 @@ class AddNoteFragment : Fragment(), View.OnClickListener, Dialogs by DialogUtils
     override fun onPause() {
         super.onPause()
         requireActivity().invalidateOptionsMenu()
-        mapView.onPause()
+        binding.mapViewAddNote.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView.onDestroy()
+        binding.mapViewAddNote.onDestroy()
 
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView.onLowMemory()
+        binding.mapViewAddNote.onLowMemory()
     }
 
     fun updateImageVisibility() {
-        val imagePath = addNoteFragmentViewModel.getImageUri()
+        val imagePath = viewModel.getImageUri()
         if (imagePath.isNotEmpty()) {
-            imageHolder.visibility = View.VISIBLE
-            imageView.setImageURI(imagePath.toUri())
+            binding.imageHolder.visibility = View.VISIBLE
+            binding.imageView.setImageURI(imagePath.toUri())
         } else {
-            imageHolder.visibility = View.GONE
+            binding.imageHolder.visibility = View.GONE
         }
     }
 

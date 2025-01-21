@@ -53,7 +53,7 @@ class ArchiveFragment : Fragment() {
 
         adapter.onItemClick = {note->
             mainViewModel.selectedNote.value = note
-            addNoteFragmentViewModel.setCurrentNote(note)
+            addNoteFragmentViewModel.currentNote = note
             mainViewModel.navigationPage.value = NavigationPage.ADD_NOTE
         }
 

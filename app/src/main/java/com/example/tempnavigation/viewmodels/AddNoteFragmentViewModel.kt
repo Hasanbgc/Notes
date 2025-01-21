@@ -12,26 +12,34 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
     val TAG= "AddNoteFragmentViewModel"
     private val noteRepository: NoteRepository
     private var imageUri:String
-    private var currentNote: NoteModel
+    private lateinit var _currentNote: NoteModel
+
+    var currentNote: NoteModel
+        get() = _currentNote
+        set(value) {
+            _currentNote = value
+            setImageUri(value.imageUri)
+        }
     init {
         val noteDb = NoteRoomDatabase.getDatabase(application)
         noteRepository = NoteRepository(noteDb.noteDao())
         imageUri = ""
-        currentNote = NoteModel.emptyNote()
+       // currentNote = NoteModel.emptyNote()
     }
     val allNote = noteRepository.getAllNotes()
 
     fun setImageUri(uri:String){
         imageUri = uri
     }
-    fun setCurrentNote(note: NoteModel) {
+   /* fun setCurrentNote(note: NoteModel) {
+        Log.d(TAG, "setCurrentNote: $note")
         currentNote = note
         setImageUri(currentNote.imageUri)
     }
 
     fun getCurrentNote(): NoteModel {
         return currentNote
-    }
+    }*/
     fun getImageUri() = imageUri
     fun insert(
         note:NoteModel,
@@ -142,7 +150,7 @@ class AddNoteFragmentViewModel(application: Application) : AndroidViewModel(appl
     fun updateCurrentNoteUsingNewID(id: String){
         getNote(id,{ noteEntity ->
             Log.d(TAG, "updateCurrentNoteUsingNewID: noteEntity = $noteEntity ")
-                setCurrentNote(noteEntity.toNoteModel())
+                currentNote = noteEntity.toNoteModel()
         },{})
     }
 }

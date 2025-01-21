@@ -47,7 +47,7 @@ class FavouriteFragment : Fragment() {
 
         adapter.onItemClick = {note->
             mainViewModel.selectedNote.value = note
-            addNoteFragmentViewModel.setCurrentNote(note)
+            addNoteFragmentViewModel.currentNote = note
             mainViewModel.navigationPage.value = NavigationPage.ADD_NOTE
         }
 
@@ -56,7 +56,7 @@ class FavouriteFragment : Fragment() {
     fun observeLiveData(){
         mainViewModel.allNotes.observe(viewLifecycleOwner, Observer { data->
             val favoriteList = data.filter { it.favourite }.map { it.toNoteModel() }
-            adapter.setNote(favoriteList)
+            adapter.submitList(favoriteList)
         })
     }
 

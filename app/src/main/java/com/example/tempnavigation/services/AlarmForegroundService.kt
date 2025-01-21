@@ -16,6 +16,7 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -37,6 +38,8 @@ import com.example.tempnavigation.utilities.Constant
 import com.example.tempnavigation.views.MainActivity
 import com.example.tempnavigation.views.fragments.AlarmDialogFragment
 import com.example.tempnavigation.views.fragments.HomeFragment
+import kotlinx.coroutines.delay
+import java.util.concurrent.TimeUnit
 
 class AlarmForegroundService:Service() {
     private val TAG = "AlarmForegroundService"
@@ -94,7 +97,12 @@ class AlarmForegroundService:Service() {
         alarmMediaPlayer.setOnCompletionListener(object : MediaPlayer.OnCompletionListener{
             override fun onCompletion(mp: MediaPlayer?) {
                 alarmMediaPlayer.releaseMediaPlayer()
-                stopSelf()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if(alertDialogView.isAttachedToWindow) {
+                        windowManager.removeView(alertDialogView)
+                    }
+                   //] stopSelf() // Uncomment if needed
+                }, 5000)
             }
 
         })
@@ -117,10 +125,14 @@ class AlarmForegroundService:Service() {
         alertMessage.text = message
         Log.d(TAG,"$title,$message")
         alertOffButton.setOnClickListener {
+            alarmMediaPlayer.stopMediaPlayer()
+            alarmMediaPlayer.releaseMediaPlayer()
+            Handler(Looper.getMainLooper()).apply {
+                if (alertDialogView.isAttachedToWindow) {
+                    windowManager.removeView(alertDialogView)
+                }
+            }
             stopSelf()
-//            alarmMediaPlayer.stopMediaPlayer()
-//            alarmMediaPlayer.releaseMediaPlayer()
-//           windowManager.removeView(alertDialogView)
         }
         // ...
 
@@ -207,7 +219,7 @@ class AlarmForegroundService:Service() {
             startMediaPlayer()
             releaseMediaPlayer()
         }
-        windowManager.removeView(alertDialogView)
+        //windowManager.removeView(alertDialogView)
     }
 
 }

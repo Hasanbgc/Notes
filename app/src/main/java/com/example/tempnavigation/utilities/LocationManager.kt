@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Looper
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Granularity
@@ -35,6 +36,7 @@ class LocationManager (val context:Context){
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+
             fusedLocationProviderClient.requestLocationUpdates(
                 createLocationRequest(),
                 locationCallback,
@@ -55,6 +57,7 @@ class LocationManager (val context:Context){
             setWaitForAccurateLocation(true)
         }.build()
     }
+    //
 
     private fun createLocationCallback() {
         locationCallback = object : LocationCallback() {

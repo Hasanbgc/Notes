@@ -36,4 +36,7 @@ interface NoteDao {
 
     @Query("SELECT * FROM ${Constant.TABLE_NOTE} ORDER BY savedTime DESC")
     fun getAllNotes(): LiveData<List<NoteEntity>>
+
+    @Query("""SELECT * FROM ${Constant.TABLE_NOTE} WHERE locationLat BETWEEN :minLat AND :maxLat AND locationLong BETWEEN :minLng AND :maxLng""")
+    fun getNearbyLocation(minLat: Double, maxLat: Double, minLng: Double, maxLng: Double): List<NoteEntity>
 }

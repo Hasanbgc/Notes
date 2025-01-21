@@ -40,7 +40,18 @@ abstract class SwipeHelper(
     @SuppressLint("ClickableViewAccessibility")
     private val touchListener = View.OnTouchListener { _, event ->
         if (swipedPosition < 0) return@OnTouchListener false
-        buttonsBuffer[swipedPosition]?.forEach { it.handle(event) }
+        val itemView = recyclerView.findViewHolderForAdapterPosition(swipedPosition)?.itemView
+        itemView?.let {
+            val swipedRect = RectF(
+                it.left.toFloat(),
+                it.top.toFloat(),
+                it.right.toFloat(),
+                it.bottom.toFloat()
+            )
+            buttonsBuffer[swipedPosition]?.forEach { button ->
+                button.handle(event, swipedRect)
+            }
+        }
         recoverQueue.add(swipedPosition)
         swipedPosition = -1
         recoverSwipedItem()
@@ -53,14 +64,14 @@ abstract class SwipeHelper(
 
     private fun recoverSwipedItem() {
         while (!recoverQueue.isEmpty) {
-            val position = recoverQueue.poll() ?: return
+            val position = recoverQueue.poll() ?: continue
             recyclerView.adapter?.notifyItemChanged(position)
-
+            buttonsBuffer.remove(position)
         }
     }
+
     fun invalidateCustomButton(position: Int) {
         buttonsBuffer.remove(position)
-        //recyclerView.adapter?.notifyItemChanged(position)
     }
 
     private fun drawButtons(
@@ -71,7 +82,7 @@ abstract class SwipeHelper(
     ) {
         var right = itemView.right
         buttons.forEach { button ->
-            val width = button.intrinsicWidth / buttons.intrinsicWidth() * abs(dX)
+            val width = button.intrinsicWidth
             val left = right - width
             button.draw(
                 canvas,
@@ -84,56 +95,45 @@ abstract class SwipeHelper(
     override fun onChildDraw(
         c: Canvas,
         recyclerView: RecyclerView,
-        viewHolder: ViewHolder,
+        viewHolder: RecyclerView.ViewHolder,
         dX: Float,
         dY: Float,
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
         val position = viewHolder.adapterPosition
-        var maxDX = dX
         val itemView = viewHolder.itemView
+        var maxDx = dX
 
-        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            if (dX < 0) {
-                if (!buttonsBuffer.containsKey(position)) {
-
-                    buttonsBuffer[position] = instantiateUnderlayButton(position)
-                    Log.e(TAG, "onChildDraw: ${buttonsBuffer.size}", )
-                    buttonsBuffer.forEach { i ->
-                        Log.e(TAG, "onChildDraw: key = ${i.key} value = ${i.value}}", )
-                    }
-                }
-
-                val buttons = buttonsBuffer[position] ?: return
-                if (buttons.isEmpty()) return
-                maxDX = max(-buttons.intrinsicWidth(), dX)
-                drawButtons(c, buttons, itemView, maxDX)
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && dX < 0) {
+            if (!buttonsBuffer.containsKey(position)) {
+                buttonsBuffer[position] = instantiateUnderlayButton(position)
             }
+            val buttons = buttonsBuffer[position] ?: return
+            if (buttons.isEmpty()) return
+            maxDx = max(-buttons.intrinsicWidth(), dX)
+            drawButtons(c, buttons, itemView, maxDx)
         }
 
-        super.onChildDraw(
-            c,
-            recyclerView,
-            viewHolder,
-            maxDX,
-            dY,
-            actionState,
-            isCurrentlyActive
-        )
+        super.onChildDraw(c, recyclerView, viewHolder, maxDx, dY, actionState, isCurrentlyActive)
     }
 
     override fun onMove(
         recyclerView: RecyclerView,
-        viewHolder: ViewHolder,
-        target: ViewHolder
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
     ): Boolean {
         return false
     }
 
-    override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val position = viewHolder.adapterPosition
-        if (swipedPosition != position) recoverQueue.add(swipedPosition)
+        if (position == RecyclerView.NO_POSITION) {
+            return // Prevent further execution if the position is invalid
+        }
+        if (swipedPosition != position) {
+            recoverQueue.add(swipedPosition)
+        }
         swipedPosition = position
         recoverSwipedItem()
     }
@@ -189,9 +189,9 @@ abstract class SwipeHelper(
             clickableRegion = rect
         }
 
-        fun handle(event: MotionEvent) {
+        fun handle(event: MotionEvent, swipedRect: RectF) {
             clickableRegion?.let {
-                if (it.contains(event.x, event.y)) {
+                if (swipedRect.contains(event.x, event.y) && it.contains(event.x, event.y)) {
                     clickListener.onClick()
                 }
             }

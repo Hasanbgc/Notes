@@ -86,6 +86,15 @@ class NoteRepository(private var noteDao: NoteDao) {
     }
     fun getAllNotes() = noteDao.getAllNotes()
 
+    fun getNearbyLocation(minLat: Double, maxLat: Double, minLng: Double, maxLng: Double,onSuccess: (note: List<NoteEntity>) -> Unit,onFailed: (message: String) -> Unit){
+        getNearbyLocationAsyncTask(minLat,maxLat,minLng,maxLng,onSuccess={
+            onSuccess(it)
+        },onFailed={
+            onFailed(it)
+        })
+    }
+
+
 
     private fun insertNoteAsyncTask(note: NoteEntity, onSuccess: (id: String) ->Unit, onFailed:(message:String)->Unit){
        // var id = ""
@@ -117,7 +126,7 @@ class NoteRepository(private var noteDao: NoteDao) {
     private fun deleteNoteAsyncTask(note:NoteEntity,onSuccess: () -> Unit,onFailed: (message: String) -> Unit){
         CoroutineScope(IO).launch {
             Log.d("NoteRepo","$note")
-            noteDao.deleteByID(note.id)
+            noteDao.delete(note)
         }.invokeOnCompletion { throwable->
             if(throwable == null) {
                 Handler(Looper.getMainLooper()).post {
@@ -186,6 +195,25 @@ class NoteRepository(private var noteDao: NoteDao) {
             }else{
                 onFailed(throwable.message.toString())
             }
+        }
+    }
+    private fun getNearbyLocationAsyncTask(
+        minLat: Double,
+        maxLat: Double,
+        minLng: Double,
+        maxLng: Double,
+        onSuccess: (note: List<NoteEntity>) -> Unit,
+        onFailed: (message: String) -> Unit) {
+        var list = listOf<NoteEntity>()
+        CoroutineScope(IO).launch{
+           list =  noteDao.getNearbyLocation(minLat,maxLat,minLng,maxLng)
+        }.invokeOnCompletion { throwable->
+            if(throwable==null){
+                onSuccess(list)
+            }else{
+                onFailed(throwable.message.toString())
+            }
+
         }
     }
 

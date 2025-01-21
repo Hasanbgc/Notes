@@ -20,7 +20,7 @@ class AlarmReceiver: BroadcastReceiver() {
             serviceIntent.putExtra("EXTRA_MESSAGE",msg)
             Log.d(TAG,"Alarm service has been started from ALARM_SCHEDULER_ACTION ")
         }else if( intent?.action == "LOCATION_UPDATE_ACTION" ){
-            val id = intent.getIntExtra("ID",0)
+            val id = intent.getStringExtra("ID")
             val serviceIntent = Intent(context,AlarmForegroundService::class.java)
             serviceIntent.action = "LOCATION_UPDATE_ACTION"
             serviceIntent.putExtra("ID",id)

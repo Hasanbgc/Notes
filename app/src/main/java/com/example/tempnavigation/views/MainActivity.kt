@@ -26,8 +26,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContentProviderCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
@@ -39,10 +41,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.work.Constraints
-import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -50,7 +50,6 @@ import com.example.tempnavigation.R
 import com.example.tempnavigation.alarms.AlarmMediaPlayer
 import com.example.tempnavigation.models.NoteModel
 import com.example.tempnavigation.services.LocationUpdateWorker
-import com.example.tempnavigation.services.MyService
 import com.example.tempnavigation.utilities.Constant
 import com.example.tempnavigation.utilities.DialogUtils
 import com.example.tempnavigation.utilities.Dialogs
@@ -63,6 +62,8 @@ import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
+
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by DialogUtils() {
     val TAG = "MainActivity"
@@ -84,7 +85,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
 
     private lateinit var alarmMediaPlayer: AlarmMediaPlayer
 
-    private val workManager = WorkManager.getInstance(this)
+    /*private val workManager = WorkManager.getInstance(this)*/
     //var list = arrayListOf<Pair<Int,Location>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +97,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
         initValue()
         observeLiveData()
         createNotificationChannel()
+        startLocationComparatorService()
     }
 
     private fun createNotificationChannel() {
@@ -230,7 +232,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
                 NavigationPage.HOME -> navController.navigate(R.id.navigation_home)
                 NavigationPage.FAVOURITE -> navController.navigate(R.id.navigation_favourite)
                 NavigationPage.ARCHIVE -> navController.navigate(R.id.navigation_archive)
-                NavigationPage.ADD_NOTE -> navController.navigate(R.id.fragment_add_note).also { getPermissionForWindowOverlay() }
+                NavigationPage.ADD_NOTE -> navController.navigate(R.id.fragment_add_note)
+                    .also { getPermissionForWindowOverlay() }
+
                 NavigationPage.EDIT_NOTE -> navController.navigate(R.id.fragment_edit_note)
                 NavigationPage.MAP -> navController.navigate(R.id.fragment_maps)
 //                {
@@ -262,14 +266,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
         }
     }
 
-        private fun actionBarSize(): Int {
-            val typedValue = TypedValue()
-            // Resolve the ?attr/actionBarSize attribute to get the actual value
-            theme.resolveAttribute(android.R.attr.actionBarSize, typedValue, true)
+    private fun actionBarSize(): Int {
+        val typedValue = TypedValue()
+        // Resolve the ?attr/actionBarSize attribute to get the actual value
+        theme.resolveAttribute(android.R.attr.actionBarSize, typedValue, true)
 
-            // Retrieve the actionBarSize value as a pixel dimension
-            return resources.getDimensionPixelSize(typedValue.resourceId)
-        }
+        // Retrieve the actionBarSize value as a pixel dimension
+        return resources.getDimensionPixelSize(typedValue.resourceId)
+    }
+
+    private fun startLocationComparatorService() {
+        Log.d(TAG,"startLocationComparatorService: has been started")
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<LocationUpdateWorker>(
+            repeatInterval = 15, TimeUnit.SECONDS
+        ).setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).build())
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork("LocationUpdateWorker", ExistingPeriodicWorkPolicy.KEEP,periodicWorkRequest)
+    }
 
         //LocationComparatorService starts here
 
@@ -280,7 +295,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
         this.startService(locationComparatorIntent)
     }*/
 
-    private fun updateLocationList(noteList:List<NoteModel>) {
+    /*private fun updateLocationList(noteList:List<NoteModel>) {
         if (noteList.isNotEmpty()) {
             val locationList = noteList.map {
                 val location = Location("").apply { latitude = it.locationLat; longitude = it.locationLong }
@@ -290,14 +305,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Dialogs by Dialo
             val gson = Gson()
             val data = workDataOf(Constant.KEY_LOCATION_LIST to locationList)
             val periodicWorkRequest = PeriodicWorkRequestBuilder<LocationUpdateWorker>(
-                repeatInterval = 3, TimeUnit.SECONDS
+                repeatInterval = 5, TimeUnit.SECONDS
             ).setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED). build()).setInputData(data).build()
             //val oneTimeWorkRequest = OneTimeWorkRequestBuilder<LocationUpdateWorker>().setInputData(data).build()
 
             workManager.enqueue(periodicWorkRequest)
 
         }
-    }
+    }*/
     fun pairToString(pair: Pair<Long, Location>): String {
         return "${pair.first},${pair.second.latitude},${pair.second.longitude}"
     }

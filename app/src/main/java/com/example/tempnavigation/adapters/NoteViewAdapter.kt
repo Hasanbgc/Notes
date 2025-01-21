@@ -7,28 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.ListAdapter
 import android.widget.TextView
-import androidx.core.net.toUri
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.tempnavigation.R
 import com.example.tempnavigation.models.NoteModel
-import com.example.tempnavigation.models.ToDoItemModel
-import com.example.tempnavigation.utilities.FileUtil
 import com.example.tempnavigation.viewmodels.AddNoteFragmentViewModel
-import com.example.tempnavigation.viewmodels.MainViewModel
-
 
 
 class NoteViewAdapter(
     private val context: Context,
-    private val viewModel: AddNoteFragmentViewModel):
-    androidx.recyclerview.widget.ListAdapter<NoteModel, NoteViewAdapter.NoteHolder>(noteDiffCallBack()) {
+    private val viewModel: AddNoteFragmentViewModel): ListAdapter<NoteModel, NoteViewAdapter.NoteHolder>(noteDiffCallBack()) {
 
     var onItemClick: ((NoteModel) -> Unit)? = null
     var mNoteList: MutableList<NoteModel> = mutableListOf()
@@ -144,45 +135,37 @@ class NoteViewAdapter(
 
 
     override fun getItemViewType(position: Int): Int {
-        return if (mNoteList[position].imageUri.isNotEmpty()) WITHIMAGE else WITHOUTIMAGE
+        return if (currentList[position].imageUri.isNotEmpty()) WITHIMAGE else WITHOUTIMAGE
     }
 
-    override fun getItemCount(): Int {
-        return mNoteList.size
-    }
+//    override fun getItemCount(): Int {
+//        return mNoteList.size
+//    }
 
-    fun setNote(noteList: List<NoteModel>) {
+    /*fun setNote(noteList: List<NoteModel>) {
         val functionName = Throwable().stackTrace[1].methodName
         Log.d(TAG,"$functionName")
         this.mNoteList = noteList as MutableList<NoteModel>
         Log.d(TAG,"$noteList")
         submitList(noteList)
-    }
+    }*/
 
     override fun onBindViewHolder(holder: NoteHolder, position: Int) {
-        val currentNote = mNoteList[position]
+        val currentNote = getItem(position)
         holder.bind(currentNote, position, selectedItems.contains(position))
 
-        /*holder.
-        holder.itemView.setOnLongClickListener {
-            longPressed = true
-            selectedItems.clear()
-            selectedItems.add(position)
-            notifyItemChanged(position)
-            true
-        }*/
     }
 
     fun deleteNoteItem(pos: Int) {
-        Log.d(TAG, "deleteNoteItem: $pos ${mNoteList[pos]}")
+        //Log.d(TAG, "deleteNoteItem: $pos ${mNoteList[pos]}")
 
         //mNoteList.sortByDescending { it.id}
-        mNoteList.removeAt(pos)
+        currentList.removeAt(pos)
 
-        Log.d(TAG, "after deleted noteList:")
-        mNoteList.forEach{i->
+        //Log.d(TAG, "after deleted noteList:")
+        /*mNoteList.forEach{i->
             Log.d(TAG, "note id: ${i.id}, note title: ${i.title}")
-        }
+        }*/
 
 
         notifyItemRemoved(pos)

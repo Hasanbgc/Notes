@@ -45,7 +45,6 @@ data class NoteEntity(
 
     companion object {
         fun emptyNoteEntity() = NoteEntity(
-            id = "",
             title = "",
             description = "",
             locationLat = 0.0,
